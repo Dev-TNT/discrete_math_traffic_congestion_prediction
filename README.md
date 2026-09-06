@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 *Hệ thống giám sát và dự đoán ùn tắc giao thông thời gian thực sử dụng Computer Vision tiên tiến*  
-*Môn học: Python for Data Science — Trường Đại học Sư Phạm Kỹ thuật TP. Hồ Chí Minh (HCMUTE)*
+*Môn học: Decrete Math — Trường Đại học Sư Phạm Kỹ thuật TP. Hồ Chí Minh (HCMUTE)*
 
 </div>
 

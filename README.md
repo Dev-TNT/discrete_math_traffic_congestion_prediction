@@ -15,9 +15,11 @@
 ---
 
 ## 👥 Tác giả & Thông tin dự án
-* **Thực hiện bởi:** Nguyễn Tuấn Thịnh — MSSV: `25139048` (GitHub: [`Dev-TNT`](https://github.com/Dev-TNT))
+* **Thực hiện bởi:**
+* Nguyễn Tuấn Thịnh — MSSV: `25139048` (GitHub: [`Dev-TNT`](https://github.com/Dev-TNT))
+* Nguyễn Lê Phúc Thịnh — MSSV: `25139047` (GitHub: [`thijnh1409`](https://github.com/thijnh1409))
 * **Ngành học:** Kỹ thuật Nhúng & IoT — HCMUTE
-* **Địa điểm khảo sát:** Ngã tư Thủ Đức, TP. Hồ Chí Minh (Nguồn dữ liệu: [giaothong.hochiminhcity.gov.vn](https://giaothong.hochiminhcity.gov.vn))
+* **Địa điểm khảo sát:** Ngã tư Hàng Xanh, TP. Hồ Chí Minh (Nguồn dữ liệu: [giaothong.hochiminhcity.gov.vn](https://giaothong.hochiminhcity.gov.vn))
 
 ---
 

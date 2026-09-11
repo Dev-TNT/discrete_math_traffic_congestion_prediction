@@ -13,7 +13,7 @@ def main():
         frame = get_traffic_image("Camera 1")
 
         if frame is not None:
-            annotated_frame, person, car, motorbike, bus, truck, total = image_processing(frame)
+            annotated_frame, person, car, motorbike, bus, truck, total, wti, wti_norm = image_processing(frame)
             cv2.imshow("Traffic YOLO Detection", annotated_frame)
         else:
             print("Không nhận được hình ảnh từ camera, đang thử lại...")

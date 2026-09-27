@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>801</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Thống kê phương tiện</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="4" column="1">
+          <widget class="QLCDNumber" name="lcd_truck"/>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLCDNumber" name="lcd_bus"/>
+         </item>
+         <item row="0" column="0" rowspan="6">
+          <widget class="QSplitter" name="splitter">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <widget class="QLabel" name="lbl_motor">
+            <property name="text">
+             <string>Xe máy:</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="lbl_car">
+            <property name="text">
+             <string>Ô tô:</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="lbl_bus">
+            <property name="text">
+             <string>Xe buýt:</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="lbl_truck">
+            <property name="text">
+             <string>Xe tải:</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="lbl_total">
+            <property name="text">
+             <string>Tổng cộng:</string>
+            </property>
+           </widget>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLCDNumber" name="lcd_car"/>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLCDNumber" name="lcd_total"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLCDNumber" name="lcd_motor"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lbl_status">
+        <property name="font">
+         <font>
+          <pointsize>14</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Trạng thái: Đang chờ</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="prog_wti">
+        <property name="styleSheet">
+         <string notr="true">QProgressBar {
+    border: 2px solid #555;
+    border-radius: 5px;
+    text-align: center;        /* Ép chữ số % vào giữa thanh */
+    color: white;              
+    font-weight: bold;
+}
+QProgressBar::chunk {
+    background-color: #ff9800; /* Phần chạy màu cam cảnh báo */
+    width: 20px;
+}</string>
+        </property>
+        <property name="value">
+         <number>24</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="lbl_camera">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Shape::Box</enum>
+      </property>
+      <property name="text">
+       <string>KHUNG HIỂN THỊ CAMERA</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::TextFormat::AutoText</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="btn_start">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #28a745; /* Màu xanh lá */
+    color: white;              /* Chữ màu trắng */
+    font-weight: bold;
+    border-radius: 5px;        /* Bo góc */
+    padding: 8px;
+}
+QPushButton:hover {
+    background-color: #218838; /* Đổi màu xanh đậm hơn khi rê chuột */
+}</string>
+        </property>
+        <property name="text">
+         <string>Khởi động camera</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_stop">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+    background-color: #dc3545; /* Màu đỏ */
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 8px;
+}
+QPushButton:hover {
+    background-color: #c82333; /* Đổi màu đỏ đậm hơn khi rê chuột */
+}</string>
+        </property>
+        <property name="text">
+         <string>Dừng hệ thống</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>801</width>
+     <height>33</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

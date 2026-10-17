@@ -1,0 +1,157 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- KHAI BÁO CÁC THƯ VIỆN CẦN THIẾT ---
+\usepackage[utf8]{vietnam} 
+\usepackage[left=3cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{authblk} % Thư viện dàn trang tác giả chuẩn bài báo
+\usepackage{titlesec}
+\usepackage{cite}
+\usepackage{subcaption}
+\usepackage{authblk} % Thư viện dàn trang tác giả chuẩn bài báo
+% --- THƯ VIỆN VẼ SƠ ĐỒ ---
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta}
+% --- TRÌNH BÀY CODE (PYTHON) ---
+\usepackage{minted}
+% --- VẼ SƠ ĐỒ (TIKZ) ---
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, arrows.meta}
+% --- URL ---
+\usepackage[colorlinks=true, urlcolor=black, linkcolor=black, citecolor=blue]{hyperref}
+
+
+% --- CẤU HÌNH TIÊU ĐỀ BÀI BÁO (Dành cho trang 2) ---
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\title{\textbf{Dự đoán thời gian ùn tắc giao thông}}
+
+% --- CẤU HÌNH KÍCH THƯỚC CHỮ TÁC GIẢ ---
+\renewcommand\Authfont{\small}          % Chỉnh font chữ tên tác giả nhỏ lại
+\renewcommand\Affilfont{\itshape\small} % Chỉnh font chữ đơn vị nhỏ lại và in nghiêng
+\renewcommand*{\Authand}{, }            % Bỏ chữ "and", thay bằng dấu phẩy
+\renewcommand*{\Authands}{, }           % Bỏ chữ "and" cuối cùng
+
+
+\author{Nguyễn Lê Phúc Thịnh}
+\author{Nguyễn Tuấn Thịnh}
+
+\affil{Khoa Điện - Điện tử, Trường Đại học Công nghệ Kỹ thuật TP.HCM}
+\affil{Giảng viên hướng dẫn: TS. Phan Học}
+
+\date{} 
+
+\begin{document}
+
+% =======================================================
+% TRANG 1: TRANG BÌA
+% =======================================================
+\begin{titlepage}
+    \begin{center}
+        \large \textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO} \\
+        \large \textbf{TRƯỜNG ĐẠI HỌC CÔNG NGHỆ KỸ THUẬT TP.HCM} \\
+        \large \textbf{KHOA ĐIỆN - ĐIỆN TỬ} \\
+        \vspace{1.5cm} 
+        
+        \includegraphics[width=4cm]{UTE_logo.png} 
+        
+        \vspace{1.5cm}
+        \textbf{\huge BÁO CÁO CUỐI KỲ} \\
+        \vspace{0.5cm}
+        \large MÔN HỌC: CẤU TRÚC RỜI RẠC \\
+        \vspace{1cm}
+        \textbf{\Large DỰ ĐOÁN THỜI GIAN ÙN TẮC GIAO THÔNG} \\
+        \vspace{2.5cm}
+    \end{center}
+
+    \begin{flushleft}
+        \large
+        \begin{tabular}{ll}
+            \textbf{Giảng viên hướng dẫn:} & TS. Phan Học \\
+            \textbf{Mã lớp học phần:} & [UTE] 261DSCC235864\_03 \\
+            \\
+            \textbf{Danh sách sinh viên thực hiện:} & \\
+            1. Nguyễn Lê Phúc Thịnh & 25139047 \\
+            2. Nguyễn Tuấn Thịnh & 25139048 \\
+        \end{tabular}
+    \end{flushleft}
+
+    \vfill 
+    
+    \begin{center}
+        \large TP. Hồ Chí Minh, tháng 10 năm 2026
+    \end{center}
+\end{titlepage}
+
+% =======================================================
+% TRANG 2: BẮT ĐẦU NỘI DUNG BÀI BÁO
+% =======================================================
+\setcounter{page}{1} % Reset số trang bắt đầu tính từ trang bài báo
+\maketitle
+
+\begin{abstract}
+... Ghi gì đó ở đây ...
+\end{abstract}
+
+\section{Giới thiệu}
+Nút giao Ngã tư Hàng Xanh là một trong những nút giao thông trọng điểm và phức 
+tạp tại khu vực TP.HCM, nơi tập trung lưu lượng phương tiện khổng lồ với đa dạng loại xe(xe máy, ô tô, xe tải, 
+container). Do sự biến động liên tục của dòng xe theo từng khung giờ trong ngày và các ngày trong tuần, khu 
+vực này thường xuyên rơi vào tình trạng ùn tắc cục bộ, gây ách tắc dây chuyền và ảnh hưởng lớn đến việc lưu 
+thông. Do đó, bài toán cần đặt ra là cần xây dựng một hệ thống giám sát tự động có khả năng thu thập dữ liệu từ 
+camera thời gian thực để mô hình hóa trạng thái giao thông, từ đó đưa ra dự đoán sớm về thời điểm ùn tắc.
+\section{Cơ sở lý thuyết}
+\subsection{Hàm số (Functions)}
+Theo định nghĩa trong giáo trình (Rosen, 8th Ed., Chương 2), hàm số $f: A \rightarrow B$ được sử dụng để thiết lập một phép 
+gán mỗi phần tử của tập hợp $A$ với đúng một phần tử của tập hợp $B$. Trong bài toán này, $A$ là không gian trạng thái đầu 
+vào chứa các vector dữ liệu lưu lượng đếm được từ khung hình camera (số xe máy, ô tô, xe tải, xe buýt), và $B$ là tập hợp các 
+mức độ ùn tắc hoặc thời gian chờ dự kiến. Quá trình tiền xử lý dữ liệu còn áp dụng các hàm sàn (floor function) và hàm trần 
+(ceiling function) để rời rạc hóa các giá trị thời gian liên tục thành các khoảng (time bins) cố định. Điều này giúp thuật toán 
+dễ dàng phân loại và ánh xạ trạng thái giao thông với chi phí tính toán (Computational Cost) thấp nhất.
+\subsection{Hệ thức truy hồi (Recursion)}
+Lưu lượng giao thông hoạt động như một hệ nhân quả theo thời gian rời rạc, nghĩa là trạng thái ùn tắc tại 
+thời điểm hiện tại chịu ảnh hưởng trực tiếp từ lưu lượng xe trong các mốc thời gian quá khứ. 
+Dựa trên lý thuyết về quan hệ truy hồi 
+(Rosen, 8th Ed., Chương 8), mật độ phương tiện tại thời điểm $t$, ký hiệu là $N_t$, được mô hình hóa dưới dạng một hệ thức 
+truy hồi tuyến tính:
+\[
+N_t = c_1 N_{t-1} + c_2 N_{t-2} + \dots + c_k N_{t-k} + F(t)
+\]
+Trong đó, $c_i$ là các hằng số trọng số thể hiện mức độ ảnh hưởng của quá khứ, và $F(t)$ là hàm đánh giá tác động ngoại cảnh. 
+Việc biểu diễn tính nhân quả thông qua hệ thức truy hồi cho phép phần mềm dự báo được lưu lượng luồng xe trong tương lai gần 
+chỉ bằng cách truy xuất một vài trạng thái bộ nhớ gần nhất, giúp tối ưu hóa được độ phức tạp của thuật toán.
+\subsection{Đồ thị (Graphs) \& Quan hệ (Relations)}
+Không gian giao thông tại nút giao Hàng Xanh trong khung hình camera được trừu tượng hóa thành một đồ thị có hướng và có trọng số $G = (V, E)$ (Rosen, 8th Ed., Chương 10). 
+Tập đỉnh $V$ đại diện cho các làn xe hoặc khu vực chờ, tập cạnh $E$ đại diện cho hướng đi của luồng phương tiện, và trọng số của cạnh chính là số lượng xe hiện hành được trích xuất từ camera. 
+Sự tương tác giữa các luồng xe được biểu diễn bằng một ma trận kề (Adjacency Matrix) đại diện cho một Quan hệ (Relation) $R$ trên tập $V$ (Rosen, 8th Ed., Chương 9). 
+Chẳng hạn, nếu luồng xe đi thẳng từ làn $v_i$ gây xung đột và cản trở luồng xe rẽ trái từ làn $v_j$, hệ thống sẽ ghi nhận $(v_i, v_j) \in R$. 
+Phân tích các ma trận quan hệ và bậc của các đỉnh (degree of vertices) trên đồ thị giúp thuật toán khoanh vùng chính xác các điểm nghẽn (bottlenecks) ngay bên trong giao lộ để phát ra cảnh báo kẹt xe.
+
+\section{Data Collection \& Implementation}
+Test....
+\begin{minted}[linenos, breaklines, frame=lines, fontsize=\small]{python}
+def get_traffic_image(name="Camera 1"):
+    global cam_id
+    timestamp = int(time.time() * 1000)
+    url = f"https://giaothong.hochiminhcity.gov.vn/render/ImageHandler.ashx?id={cam_id[name]}&t={timestamp}"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Referer": "https://giaothong.hochiminhcity.gov.vn/Map.aspx"
+    }
+
+    try:
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+            img_array = np.asarray(bytearray(response.content), dtype=np.uint8)
+            frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+            return frame
+        else:
+                print(f"Server response error: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+            print(f"Network error: {e}")
+
+    return None
+\end{minted}
+\section{Kết luận}
+
+\end{document}

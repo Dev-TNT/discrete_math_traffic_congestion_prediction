@@ -115,7 +115,7 @@ Không gian giao thông tại nút giao Hàng Xanh trong khung hình camera đư
 Sự tương tác giữa các luồng xe được biểu diễn bằng một ma trận kề (Adjacency Matrix) đại diện cho một Quan hệ (Relation) $R$ trên tập $V$ (Rosen, 8th Ed., Chương 9). Chẳng hạn, nếu luồng xe đi thẳng từ làn $v_i$ gây xung đột và cản trở luồng xe rẽ trái từ làn $v_j$, hệ thống sẽ ghi nhận $(v_i, v_j) \in R$. Phân tích các ma trận quan hệ và bậc của các đỉnh (degree of vertices) trên đồ thị giúp thuật toán khoanh vùng chính xác các điểm nghẽn (bottlenecks) ngay bên trong giao lộ để phát ra cảnh báo kẹt xe.
 
 \section{Data Collection \& Implementation}
-Test.... Các thuật toán và đoạn mã cốt lõi quan trọng được mô tả ở phần này, chi tiết mã nguồn hoàn chỉnh xem tại Phụ lục A.
+Test....
 
 \section{Kết luận}
 ...
@@ -124,7 +124,15 @@ Test.... Các thuật toán và đoạn mã cốt lõi quan trọng được mô
 \newpage
 \appendix
 \section{Mã nguồn (Source Codes)}
-
+\subsection{Các thư viện được sử dụng}
+\begin{minted}[linenos, breaklines, frame=lines, fontsize=\small]{python}
+import requests
+import cv2
+import numpy as np
+import time
+    
+\end{minted}
+\subsection{Get\_frame.py}
 \begin{minted}[linenos, breaklines, frame=lines, fontsize=\small]{python}
 def get_traffic_image(name="Camera 1"):
     global cam_id
@@ -148,6 +156,66 @@ def get_traffic_image(name="Camera 1"):
         print(f"Network error: {e}")
 
     return None
+\end{minted}
+
+\subsection{Yolo\_detect.py}
+\begin{minted}[linenos, breaklines, frame=lines, fontsize=\small]{python}
+def callback(image_slice: np.ndarray) -> sv.Detections:
+    result = model(image_slice)[0]
+    return sv.Detections.from_ultralytics(result)
+
+def image_processing(frame):
+    slicer = sv.InferenceSlicer(callback=callback, slice_wh=(256, 256))
+    detections = slicer(frame)
+
+    # Đếm theo class ID của YOLO
+    class_ids = detections.class_id
+
+    person_count = np.sum(class_ids == 0)
+    car_count = np.sum(class_ids == 2)
+    motorbike_count = np.sum(class_ids == 3)
+    bus_count = np.sum(class_ids == 5)
+    truck_count = np.sum(class_ids == 7)
+    total_vehicles = car_count + motorbike_count + bus_count + truck_count
+    total_objects = len(class_ids)
+
+    print(f"Person: {person_count}")
+    print(f"Car: {car_count}")
+    print(f"Motorbike: {motorbike_count}")
+    print(f"Bus: {bus_count}")
+    print(f"Truck: {truck_count}")
+    print(f"Total vehicles: {total_vehicles}")
+    print(f"Total objects detected: {total_objects}")
+
+    # Weighted Traffic Impact (WTI)
+    car_w = 4
+    motorbike_w = 1
+    bus_w = 7
+    truck_w = 6
+
+    weighted_traffic_impact = (
+            int(car_count) * car_w
+            + int(motorbike_count) * motorbike_w
+            + int(bus_count) * bus_w
+            + int(truck_count) * truck_w
+    )
+
+    weighted_traffic_impact_norm = (
+        weighted_traffic_impact / total_vehicles if total_vehicles > 0 else 0.0
+    )
+
+    box_annotator = sv.BoxAnnotator(thickness=1)
+
+    annotated_frame = box_annotator.annotate(
+        scene=frame.copy(),
+        detections=detections
+    )
+
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cv2.putText(annotated_frame, f"{current_time}", (15, 35),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+
+    return annotated_frame, person_count, car_count, motorbike_count, bus_count, truck_count, total_vehicles, weighted_traffic_impact, weighted_traffic_impact_norm
 \end{minted}
 
 \end{document}

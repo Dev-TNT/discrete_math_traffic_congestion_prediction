@@ -16,9 +16,9 @@
             \PYG{n}{frame} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imdecode}\PYG{p}{(}\PYG{n}{img\PYGZus{}array}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{IMREAD\PYGZus{}COLOR}\PYG{p}{)}
             \PYG{k}{return} \PYG{n}{frame}
         \PYG{k}{else}\PYG{p}{:}
-                \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Server response error: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{response}\PYG{o}{.}\PYG{n}{status\PYGZus{}code}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+            \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Server response error: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{response}\PYG{o}{.}\PYG{n}{status\PYGZus{}code}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
     \PYG{k}{except} \PYG{n}{requests}\PYG{o}{.}\PYG{n}{exceptions}\PYG{o}{.}\PYG{n}{RequestException} \PYG{k}{as} \PYG{n}{e}\PYG{p}{:}
-            \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Network error: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{e}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+        \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Network error: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{e}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 
     \PYG{k}{return} \PYG{k+kc}{None}
 \end{MintedVerbatim}

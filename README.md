@@ -6,6 +6,9 @@
 [![Ultralytics YOLO](https://img.shields.io/badge/YOLO-26x-green?style=for-the-badge&logo=ultralytics&logoColor=white)](https://github.com/ultralytics/ultralytics)
 [![Supervision](https://img.shields.io/badge/Roboflow-Supervision-orange?style=for-the-badge&logo=roboflow&logoColor=white)](https://github.com/roboflow/supervision)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![MultiOutputRegressor](https://img.shields.io/badge/Model-MultiOutputRegressor%28HistGradientBoostingRegressor%29-8A2BE2?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/stable/modules/generated/sklearn.multioutput.MultiOutputRegressor.html)
+[![HCMC Traffic Map](https://img.shields.io/badge/Data-HCMC%20Traffic%20Map-00C7B7?style=for-the-badge&logo=googlemaps&logoColor=white)](https://giaothong.hochiminhcity.gov.vn/map.aspx)
 
 *Hệ thống giám sát và dự đoán ùn tắc giao thông thời gian thực sử dụng Computer Vision tiên tiến*  
 *Môn học: Discrete Math — Trường Đại học Sư Phạm Kỹ thuật TP. Hồ Chí Minh (HCMUTE)*

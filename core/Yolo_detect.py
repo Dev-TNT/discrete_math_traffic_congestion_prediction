@@ -15,7 +15,7 @@ def image_processing(frame):
     detections = slicer(frame)
 
     # Đếm theo class ID của YOLO
-    class_ids = detections.class_id
+    class_ids = detections.class_id if detections.class_id is not None else np.array([])
 
     person_count = np.sum(class_ids == 0)
     car_count = np.sum(class_ids == 2)
@@ -23,15 +23,6 @@ def image_processing(frame):
     bus_count = np.sum(class_ids == 5)
     truck_count = np.sum(class_ids == 7)
     total_vehicles = car_count + motorbike_count + bus_count + truck_count
-    total_objects = len(class_ids)
-
-    print(f"Person: {person_count}")
-    print(f"Car: {car_count}")
-    print(f"Motorbike: {motorbike_count}")
-    print(f"Bus: {bus_count}")
-    print(f"Truck: {truck_count}")
-    print(f"Total vehicles: {total_vehicles}")
-    print(f"Total objects detected: {total_objects}")
 
     # Weighted Traffic Impact (WTI)
     car_w = 4
@@ -46,9 +37,18 @@ def image_processing(frame):
             + int(truck_count) * truck_w
     )
 
-    weighted_traffic_impact_norm = (
-        weighted_traffic_impact / total_vehicles if total_vehicles > 0 else 0.0
-    )
+    weighted_traffic_impact_norm = weighted_traffic_impact * (1.0 + np.log1p(total_vehicles))
+
+    print(f"Person: {person_count}")
+    print(f"Car: {car_count}")
+    print(f"Motorbike: {motorbike_count}")
+    print(f"Bus: {bus_count}")
+    print(f"Truck: {truck_count}")
+    print(f"Total vehicles: {total_vehicles}")
+    print(f"Weighted traffic impact: {weighted_traffic_impact}")
+    print(f"Weighted traffic impact (normalized): {weighted_traffic_impact_norm}")
+
+
 
     box_annotator = sv.BoxAnnotator(thickness=1)
 
@@ -61,4 +61,16 @@ def image_processing(frame):
     cv2.putText(annotated_frame, f"{current_time}", (15, 35),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
 
-    return annotated_frame, person_count, car_count, motorbike_count, bus_count, truck_count, total_vehicles, weighted_traffic_impact, weighted_traffic_impact_norm
+    return (
+        annotated_frame,
+        person_count,
+        car_count,
+        motorbike_count,
+        bus_count,
+        truck_count,
+        total_vehicles,
+        weighted_traffic_impact,
+        weighted_traffic_impact_norm,
+    )
+
+

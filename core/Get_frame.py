@@ -34,8 +34,7 @@ cam_id = {
     "Camera 2": "5d9ddec9766c880017188c9c",
     "Camera 3": "5b0e1faacddcc80011ceb449",
     "Camera 4": "5d9ddf49766c880017188ca0",
-    "Camera 5": "5d9dde1f766c880017188c98",
-    "Camera 6": "56df8198c062921100c143dd",
+    "Camera 5": "5d9dde1f766c880017188c98"
 }
 print(f"Starting data collection loop for camera: {list(cam_id.keys())}...")
 

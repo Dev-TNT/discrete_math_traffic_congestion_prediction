@@ -1,27 +1,30 @@
-import cv2
-from core.Get_frame import get_traffic_image, cam_id
-from core.Yolo_detect import image_processing
+"""Application entry point for the Traffic Jam Prediction desktop UI."""
 
-def main():
-    print(f"Bắt đầu luồng xử lý nhận diện cho các camera: {list(cam_id.keys())}...")
-    print("Nhấn phím 'q' trên cửa sổ hiển thị để thoát chương trình.")
+import sys
 
-    window_name = "Traffic YOLO Detection"
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+from PyQt5.QtWidgets import QApplication
+from qfluentwidgets import Theme, setTheme
 
-    while True:
-        frame = get_traffic_image("Camera 1")
+from core.vision_worker import CameraWorker
+from ui.main_window import MainWindow
 
-        if frame is not None:
-            annotated_frame, person, car, motorbike, bus, truck, total, wti, wti_norm = image_processing(frame)
-            cv2.imshow("Traffic YOLO Detection", annotated_frame)
-        else:
-            print("Không nhận được hình ảnh từ camera, đang thử lại...")
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+def main() -> int:
+    """Build the UI, start the vision worker, and clean it up on exit."""
+    app = QApplication(sys.argv)
+    setTheme(Theme.AUTO)
 
-    cv2.destroyAllWindows()
+    window = MainWindow()
+    camera_worker = CameraWorker(app)
+    camera_worker.frame_ready.connect(window.cameraTab.update_frame)
+    camera_worker.counts_ready.connect(window.dashboardTab.receive_sample)
+    app.aboutToQuit.connect(camera_worker.stop)
+    app.aboutToQuit.connect(window.dashboardTab.stop)
+
+    window.show()
+    camera_worker.start()
+    return app.exec()
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

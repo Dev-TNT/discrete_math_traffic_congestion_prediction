@@ -1,0 +1,58 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{callback}\PYG{p}{(}\PYG{n}{image\PYGZus{}slice}\PYG{p}{:} \PYG{n}{np}\PYG{o}{.}\PYG{n}{ndarray}\PYG{p}{)} \PYG{o}{\PYGZhy{}\PYGZgt{}} \PYG{n}{sv}\PYG{o}{.}\PYG{n}{Detections}\PYG{p}{:}
+    \PYG{n}{result} \PYG{o}{=} \PYG{n}{model}\PYG{p}{(}\PYG{n}{image\PYGZus{}slice}\PYG{p}{)[}\PYG{l+m+mi}{0}\PYG{p}{]}
+    \PYG{k}{return} \PYG{n}{sv}\PYG{o}{.}\PYG{n}{Detections}\PYG{o}{.}\PYG{n}{from\PYGZus{}ultralytics}\PYG{p}{(}\PYG{n}{result}\PYG{p}{)}
+
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{image\PYGZus{}processing}\PYG{p}{(}\PYG{n}{frame}\PYG{p}{):}
+    \PYG{n}{slicer} \PYG{o}{=} \PYG{n}{sv}\PYG{o}{.}\PYG{n}{InferenceSlicer}\PYG{p}{(}\PYG{n}{callback}\PYG{o}{=}\PYG{n}{callback}\PYG{p}{,} \PYG{n}{slice\PYGZus{}wh}\PYG{o}{=}\PYG{p}{(}\PYG{l+m+mi}{256}\PYG{p}{,} \PYG{l+m+mi}{256}\PYG{p}{))}
+    \PYG{n}{detections} \PYG{o}{=} \PYG{n}{slicer}\PYG{p}{(}\PYG{n}{frame}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Đếm theo class ID của YOLO}
+    \PYG{n}{class\PYGZus{}ids} \PYG{o}{=} \PYG{n}{detections}\PYG{o}{.}\PYG{n}{class\PYGZus{}id}
+
+    \PYG{n}{person\PYGZus{}count} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{(}\PYG{n}{class\PYGZus{}ids} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{)}
+    \PYG{n}{car\PYGZus{}count} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{(}\PYG{n}{class\PYGZus{}ids} \PYG{o}{==} \PYG{l+m+mi}{2}\PYG{p}{)}
+    \PYG{n}{motorbike\PYGZus{}count} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{(}\PYG{n}{class\PYGZus{}ids} \PYG{o}{==} \PYG{l+m+mi}{3}\PYG{p}{)}
+    \PYG{n}{bus\PYGZus{}count} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{(}\PYG{n}{class\PYGZus{}ids} \PYG{o}{==} \PYG{l+m+mi}{5}\PYG{p}{)}
+    \PYG{n}{truck\PYGZus{}count} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sum}\PYG{p}{(}\PYG{n}{class\PYGZus{}ids} \PYG{o}{==} \PYG{l+m+mi}{7}\PYG{p}{)}
+    \PYG{n}{total\PYGZus{}vehicles} \PYG{o}{=} \PYG{n}{car\PYGZus{}count} \PYG{o}{+} \PYG{n}{motorbike\PYGZus{}count} \PYG{o}{+} \PYG{n}{bus\PYGZus{}count} \PYG{o}{+} \PYG{n}{truck\PYGZus{}count}
+    \PYG{n}{total\PYGZus{}objects} \PYG{o}{=} \PYG{n+nb}{len}\PYG{p}{(}\PYG{n}{class\PYGZus{}ids}\PYG{p}{)}
+
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Person: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{person\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Car: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{car\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Motorbike: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{motorbike\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Bus: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{bus\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Truck: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{truck\PYGZus{}count}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Total vehicles: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{total\PYGZus{}vehicles}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Total objects detected: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{total\PYGZus{}objects}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+    \PYG{c+c1}{\PYGZsh{} Weighted Traffic Impact (WTI)}
+    \PYG{n}{car\PYGZus{}w} \PYG{o}{=} \PYG{l+m+mi}{4}
+    \PYG{n}{motorbike\PYGZus{}w} \PYG{o}{=} \PYG{l+m+mi}{1}
+    \PYG{n}{bus\PYGZus{}w} \PYG{o}{=} \PYG{l+m+mi}{7}
+    \PYG{n}{truck\PYGZus{}w} \PYG{o}{=} \PYG{l+m+mi}{6}
+
+    \PYG{n}{weighted\PYGZus{}traffic\PYGZus{}impact} \PYG{o}{=} \PYG{p}{(}
+            \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{car\PYGZus{}count}\PYG{p}{)} \PYG{o}{*} \PYG{n}{car\PYGZus{}w}
+            \PYG{o}{+} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{motorbike\PYGZus{}count}\PYG{p}{)} \PYG{o}{*} \PYG{n}{motorbike\PYGZus{}w}
+            \PYG{o}{+} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{bus\PYGZus{}count}\PYG{p}{)} \PYG{o}{*} \PYG{n}{bus\PYGZus{}w}
+            \PYG{o}{+} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{truck\PYGZus{}count}\PYG{p}{)} \PYG{o}{*} \PYG{n}{truck\PYGZus{}w}
+    \PYG{p}{)}
+
+    \PYG{n}{weighted\PYGZus{}traffic\PYGZus{}impact\PYGZus{}norm} \PYG{o}{=} \PYG{p}{(}
+        \PYG{n}{weighted\PYGZus{}traffic\PYGZus{}impact} \PYG{o}{/} \PYG{n}{total\PYGZus{}vehicles} \PYG{k}{if} \PYG{n}{total\PYGZus{}vehicles} \PYG{o}{\PYGZgt{}} \PYG{l+m+mi}{0} \PYG{k}{else} \PYG{l+m+mf}{0.0}
+    \PYG{p}{)}
+
+    \PYG{n}{box\PYGZus{}annotator} \PYG{o}{=} \PYG{n}{sv}\PYG{o}{.}\PYG{n}{BoxAnnotator}\PYG{p}{(}\PYG{n}{thickness}\PYG{o}{=}\PYG{l+m+mi}{1}\PYG{p}{)}
+
+    \PYG{n}{annotated\PYGZus{}frame} \PYG{o}{=} \PYG{n}{box\PYGZus{}annotator}\PYG{o}{.}\PYG{n}{annotate}\PYG{p}{(}
+        \PYG{n}{scene}\PYG{o}{=}\PYG{n}{frame}\PYG{o}{.}\PYG{n}{copy}\PYG{p}{(),}
+        \PYG{n}{detections}\PYG{o}{=}\PYG{n}{detections}
+    \PYG{p}{)}
+
+    \PYG{n}{current\PYGZus{}time} \PYG{o}{=} \PYG{n}{datetime}\PYG{o}{.}\PYG{n}{now}\PYG{p}{()}\PYG{o}{.}\PYG{n}{strftime}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZpc{}Y\PYGZhy{}\PYGZpc{}m\PYGZhy{}}\PYG{l+s+si}{\PYGZpc{}d}\PYG{l+s+s2}{ \PYGZpc{}H:\PYGZpc{}M:\PYGZpc{}S\PYGZdq{}}\PYG{p}{)}
+    \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{putText}\PYG{p}{(}\PYG{n}{annotated\PYGZus{}frame}\PYG{p}{,} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{current\PYGZus{}time}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{15}\PYG{p}{,} \PYG{l+m+mi}{35}\PYG{p}{),}
+                \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{FONT\PYGZus{}HERSHEY\PYGZus{}SIMPLEX}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{(}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{,} \PYG{l+m+mi}{255}\PYG{p}{),} \PYG{l+m+mi}{2}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{n}{annotated\PYGZus{}frame}\PYG{p}{,} \PYG{n}{person\PYGZus{}count}\PYG{p}{,} \PYG{n}{car\PYGZus{}count}\PYG{p}{,} \PYG{n}{motorbike\PYGZus{}count}\PYG{p}{,} \PYG{n}{bus\PYGZus{}count}\PYG{p}{,} \PYG{n}{truck\PYGZus{}count}\PYG{p}{,} \PYG{n}{total\PYGZus{}vehicles}\PYG{p}{,} \PYG{n}{weighted\PYGZus{}traffic\PYGZus{}impact}\PYG{p}{,} \PYG{n}{weighted\PYGZus{}traffic\PYGZus{}impact\PYGZus{}norm}
+\end{MintedVerbatim}

@@ -3,3 +3,13 @@ __pycache__/
 *.part
 .idea/
 *.iml
+# LaTeX auxiliary and cache files
+_minted-*/
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.out
+*.toc
+*.gz

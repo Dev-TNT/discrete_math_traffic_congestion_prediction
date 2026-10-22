@@ -1,0 +1,24 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{get\PYGZus{}traffic\PYGZus{}image}\PYG{p}{(}\PYG{n}{name}\PYG{o}{=}\PYG{l+s+s2}{\PYGZdq{}Camera 1\PYGZdq{}}\PYG{p}{):}
+    \PYG{k}{global} \PYG{n}{cam\PYGZus{}id}
+    \PYG{n}{timestamp} \PYG{o}{=} \PYG{n+nb}{int}\PYG{p}{(}\PYG{n}{time}\PYG{o}{.}\PYG{n}{time}\PYG{p}{()} \PYG{o}{*} \PYG{l+m+mi}{1000}\PYG{p}{)}
+    \PYG{n}{url} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}https://giaothong.hochiminhcity.gov.vn/render/ImageHandler.ashx?id=}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{cam\PYGZus{}id}\PYG{p}{[}\PYG{n}{name}\PYG{p}{]}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZam{}t=}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{timestamp}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}
+
+    \PYG{n}{headers} \PYG{o}{=} \PYG{p}{\PYGZob{}}
+        \PYG{l+s+s2}{\PYGZdq{}User\PYGZhy{}Agent\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\PYGZdq{}}\PYG{p}{,}
+        \PYG{l+s+s2}{\PYGZdq{}Referer\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}https://giaothong.hochiminhcity.gov.vn/Map.aspx\PYGZdq{}}
+    \PYG{p}{\PYGZcb{}}
+
+    \PYG{k}{try}\PYG{p}{:}
+        \PYG{n}{response} \PYG{o}{=} \PYG{n}{requests}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{url}\PYG{p}{,} \PYG{n}{headers}\PYG{o}{=}\PYG{n}{headers}\PYG{p}{,} \PYG{n}{timeout}\PYG{o}{=}\PYG{l+m+mi}{5}\PYG{p}{)}
+        \PYG{k}{if} \PYG{n}{response}\PYG{o}{.}\PYG{n}{status\PYGZus{}code} \PYG{o}{==} \PYG{l+m+mi}{200}\PYG{p}{:}
+            \PYG{n}{img\PYGZus{}array} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{asarray}\PYG{p}{(}\PYG{n+nb}{bytearray}\PYG{p}{(}\PYG{n}{response}\PYG{o}{.}\PYG{n}{content}\PYG{p}{),} \PYG{n}{dtype}\PYG{o}{=}\PYG{n}{np}\PYG{o}{.}\PYG{n}{uint8}\PYG{p}{)}
+            \PYG{n}{frame} \PYG{o}{=} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{imdecode}\PYG{p}{(}\PYG{n}{img\PYGZus{}array}\PYG{p}{,} \PYG{n}{cv2}\PYG{o}{.}\PYG{n}{IMREAD\PYGZus{}COLOR}\PYG{p}{)}
+            \PYG{k}{return} \PYG{n}{frame}
+        \PYG{k}{else}\PYG{p}{:}
+            \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Server response error: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{response}\PYG{o}{.}\PYG{n}{status\PYGZus{}code}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+    \PYG{k}{except} \PYG{n}{requests}\PYG{o}{.}\PYG{n}{exceptions}\PYG{o}{.}\PYG{n}{RequestException} \PYG{k}{as} \PYG{n}{e}\PYG{p}{:}
+        \PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Network error: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{e}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+    \PYG{k}{return} \PYG{k+kc}{None}
+\end{MintedVerbatim}

@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Đối chiếu đề xuất ban đầu và hệ thống hiện tại}
+        \vspace{0.2cm}
+        \begin{tabular}{|p{3.5cm}|p{5.5cm}|p{6.5cm}|}
+            \hline
+            \textbf{Nội dung} & \textbf{Đề xuất ban đầu} & \textbf{Triển khai được kiểm tra} \\
+            \hline
+            Nhận diện & Các biến thể YOLO nano được nhắc ở nhiều phần & YOLO("\texttt{yolo26x.pt}"), kết hợp chia lát ảnh bằng Supervision \\
+            \hline
+            Mô hình chuỗi thời gian & Prophet/STL, XGBoost/LightGBM; cân nhắc LSTM/GRU & MultiOutputRegressor bao ngoài HistGradientBoostingRegressor \\
+            \hline
+            Mục tiêu học & Số phút đến khi vượt ngưỡng, có đề cập nhãn bị chặn trên & WTI trực tiếp ở 60 thời điểm tương lai; ETA tính bằng quy tắc \\
+            \hline
+            Ngưỡng & Phân vị 85–90 theo lịch sử cùng giờ & Ngưỡng cố định 100 WTI, chưa hiệu chuẩn bằng nhãn giao thông \\
+            \hline
+            Triển khai & GitHub Actions và trang web/notebook & Ứng dụng desktop PyQt5; train chạy riêng; lưu vận hành bằng SQLite \\
+            \hline
+            Chất lượng ảnh & Dự kiến lọc tối, mờ và mưa & Có xử lý ảnh tải lỗi, loại ảnh lặp hoàn toàn; chưa thấy bộ lọc chất lượng ảnh tương ứng \\
+            \hline
+        \end{tabular}
+    \end{table}

@@ -1,0 +1,71 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+    % Định nghĩa 2 màu đặc trưng giống biểu đồ gốc
+    \definecolor{colorData1}{RGB}{14, 124, 134} % Xanh teal
+    \definecolor{colorData2}{RGB}{217, 119, 36}  % Cam đất
+
+    \begin{axis}[
+        title={\textbf{Đối chiếu nhịp ngày của hai đợt thu}},
+        title style={font=\normalsize, yshift=2pt},
+        width=0.92\textwidth,
+        height=6.2cm,
+        xlabel={Giờ trong ngày},
+        ylabel={WTI trung bình},
+        xlabel style={font=\small},
+        ylabel style={font=\small},
+        tick label style={font=\footnotesize},
+        xmin=-0.8, xmax=23.8,
+        ymin=7, ymax=138,
+        xtick={0,2,4,6,8,10,12,14,16,18,20,22},
+        ytick={20,40,60,80,100,120},
+        % Cấu hình lưới mờ và trục tọa độ
+        grid=both,
+        grid style={line width=0.2pt, draw=gray!15},
+        axis x line*=bottom,
+        axis y line*=left,
+        legend style={
+            at={(0.97,0.95)},
+            anchor=north east,
+            draw=gray!30,
+            fill=white,
+            font=\footnotesize,
+            cells={anchor=west}
+        }
+    ]
+
+        % Đường biểu diễn data1 (Xanh teal)
+        \addplot[
+            color=colorData1,
+            mark=*,
+            mark size=1.8pt,
+            line width=1.1pt
+        ] coordinates {
+            (0, 26.5) (1, 16.7) (2, 12.5) (3, 14.8) (4, 19.8) 
+            (5, 38.9) (6, 85.0) (7, 99.0) (8, 110.5) (9, 118.2) 
+            (10, 114.5) (11, 132.0) (12, 122.3) (13, 109.8) (14, 114.6) 
+            (15, 116.8) (16, 115.5) (17, 97.0) (18, 97.5) (19, 60.9) 
+            (20, 50.6) (21, 46.7) (22, 43.2) (23, 35.5)
+        };
+        \addlegendentry{data1}
+
+        % Đường biểu diễn data2 (Cam đất)
+        \addplot[
+            color=colorData2,
+            mark=*,
+            mark size=1.8pt,
+            line width=1.1pt
+        ] coordinates {
+            (0, 26.5) (1, 19.0) (2, 16.6) (3, 18.0) (4, 27.2) 
+            (5, 52.0) (6, 79.6) (7, 99.5) (8, 106.3) (9, 115.0) 
+            (10, 110.4) (11, 109.2) (12, 112.1) (13, 101.5) (14, 106.9) 
+            (15, 108.3) (16, 120.0) (17, 99.0) (18, 80.7) (19, 69.6) 
+            (20, 53.5) (21, 50.1) (22, 45.6) (23, 34.4)
+        };
+        \addlegendentry{data2}
+
+    \end{axis}
+\end{tikzpicture}
+\caption{Đối chiếu biến thiên chỉ số WTI trung bình theo các khung giờ trong ngày giữa data1 và data2.}
+\label{fig:hourly_wti_comparison}
+\end{figure}

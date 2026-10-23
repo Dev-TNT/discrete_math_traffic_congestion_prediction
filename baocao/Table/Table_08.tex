@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Bảng thiết kế 61 đặc trưng đầu vào}
+        \vspace{0.2cm}
+        \begin{tabular}{|p{3.2cm}|p{1.5cm}|p{5.5cm}|p{6cm}|}
+            \hline
+            \textbf{Nhóm đặc trưng} & \textbf{Số lượng} & \textbf{Nội dung chi tiết} & \textbf{Thông tin cung cấp} \\
+            \hline
+            Phút hiện tại & 11 & Trung bình 4 loại xe; mean, std, max của \texttt{total} và \texttt{WTI}; số mẫu & Mức độ hiện diện, cơ cấu thành phần dòng xe, dao động nội phút và độ phủ dữ liệu. \\
+            \hline
+            Giá trị trễ (Lags) & 16 & Lag 1, 2, 3, 5, 10, 15, 30, 60 cho cả \texttt{total} và \texttt{WTI} & Nắm bắt trạng thái giao thông gần nhất và mức nền tại các mốc xa hơn trong quá khứ. \\
+            \hline
+            Thống kê trượt & 26 & Mean (5, 15, 30, 60); std, min, max (5, 15, 30) cho cả \texttt{total} và \texttt{WTI} & Xu hướng trung tâm, biên độ biến thiên và mức độ bất ổn định cục bộ. \\
+            \hline
+            Độ dốc (Slope) & 6 & Slope 5, 15, 30 cho \texttt{total} và \texttt{WTI} & Hướng tăng/giảm và tốc độ biến thiên trung bình của lưu lượng. \\
+            \hline
+            Thời gian chu kỳ & 2 & \texttt{hour\_sin}, \texttt{hour\_cos} & Vị trí của thời điểm quan sát trong chu kỳ 24 giờ. \\
+            \hline
+            \textbf{Tổng cộng} & \textbf{61} & \multicolumn{2}{p{11.5cm}|}{} \\
+            \hline
+        \end{tabular}
+    \end{table}

@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+        \centering
+        \caption{So sánh MAE giữa các phương pháp trên tập kiểm thử data2}
+        \label{tab:mae_comparison}
+        \begin{tabular}{|l|c|c|c|c|c|}
+            \hline
+            \textbf{Phương pháp} & \textbf{MAE +1} & \textbf{MAE +15} & \textbf{MAE +30} & \textbf{MAE +60} & \textbf{MAE TB 60 horizon} \\
+            \hline
+            HGB, làm mượt 3 phút & 13,70 & 13,40 & 14,10 & 14,71 & 14,12 \\
+            Tham chiếu cùng giờ từ data1 & 14,27 & 14,77 & 14,88 & 14,35 & 14,71 \\
+            Giữ nguyên WTI hiện tại & 15,72 & 17,04 & 17,29 & 20,70 & 18,55 \\
+            Ngoại suy slope 15 phút & 15,86 & 28,23 & 38,55 & 62,13 & 40,35 \\
+            \hline
+        \end{tabular}
+    \end{table}

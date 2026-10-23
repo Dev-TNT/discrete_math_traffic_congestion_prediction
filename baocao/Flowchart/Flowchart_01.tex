@@ -1,0 +1,50 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance = 1.2cm and 0.6cm,
+    every node/.style = {font=\small},
+    block/.style = {
+        rectangle, 
+        draw=blue!70!black, 
+        fill=blue!5, 
+        thick,
+        rounded corners=3pt,
+        align=center, 
+        minimum height=1.1cm,
+        inner sep=6pt
+    },
+    line/.style = {
+        -Stealth, 
+        thick, 
+        draw=gray!80
+    }
+]
+
+    % --- TẦNG 1: XỬ LÝ DỮ LIỆU ĐẦU VÀO ---
+    \node [block, text width=2.6cm] (b1) {Ảnh Camera 1};
+    \node [block, text width=2.9cm, right=of b1] (b2) {YOLO \& Chia lát ảnh};
+    \node [block, text width=2.8cm, right=of b2] (b3) {Đếm phân loại\\\& Tính điểm WTI};
+    \node [block, text width=3.0cm, right=of b3] (b4) {Tổng hợp phút\\hoàn tất};
+
+    % --- TẦNG 2: MÔ HÌNH VÀ CẢNH BÁO ---
+    \node [block, text width=3.0cm, below=of b4] (b5) {61 đặc trưng};
+    \node [block, text width=2.8cm, left=of b5] (b6) {60 bộ hồi quy};
+    \node [block, text width=2.9cm, left=of b6] (b7) {Làm mượt};
+    \node [block, text width=2.6cm, left=of b7, fill=orange!10, draw=orange!80!black] (b8) {\textbf{Ước tính ETA}\\\textbf{\& Dashboard}};
+
+    % --- CÁC ĐƯỜNG NỐI (MŨI TÊN) ---
+    \draw [line] (b1) -- (b2);
+    \draw [line] (b2) -- (b3);
+    \draw [line] (b3) -- (b4);
+    
+    % Đường chuyển từ tầng 1 xuống tầng 2
+    \draw [line] (b4) -- (b5);
+    
+    \draw [line] (b5) -- (b6);
+    \draw [line] (b6) -- (b7);
+    \draw [line] (b7) -- (b8);
+
+\end{tikzpicture}
+\caption{Sơ đồ luồng xử lý dữ liệu và suy luận dự báo tổng thể của hệ thống.}
+\label{fig:pipeline_flowchart}
+\end{figure}

@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Các ưu tiên và tiêu chí hoàn thành cho vòng phát triển tiếp theo}
+        \label{tab:future_priorities}
+        \begin{tabular}{|c|p{7.5cm}|p{7.5cm}|}
+            \hline
+            \textbf{Ưu tiên} & \textbf{Việc cần làm} & \textbf{Bằng chứng hoàn thành cần có} \\
+            \hline
+            1 & Thu thêm nhiều ngày và lưu camera ID, phiên bản detector, cấu hình vùng quan tâm & Dữ liệu có nguồn gốc rõ ràng, bao phủ các thời đoạn và điều kiện quan sát khác nhau \\
+            \hline
+            2 & Gán nhãn một tập ảnh và trạng thái giao thông độc lập & Sai số đếm/phân loại theo lớp, điều kiện ảnh và đánh giá ngưỡng với nhãn thực \\
+            \hline
+            3 & Đồng nhất tiêu chí số mẫu giữa train, replay và live & Backtest phản ánh đúng điều kiện được phép dự báo, kèm tỷ lệ bao phủ \\
+            \hline
+            4 & Chấm lại nhánh tạm thời đang dùng trên dữ liệu mới & So sánh cùng origin giữa tham chiếu thuần, hiệu chỉnh mức/xu hướng và nhánh model \\
+            \hline
+            5 & Đánh giá cảnh báo theo sự kiện và thời điểm khởi phát & Báo nhầm/giờ, bỏ sót đợt, lead time, ETA trên tập chung và các trường hợp không cảnh báo \\
+            \hline
+            6 & Đo khả năng vận hành trên máy triển khai & Độ trễ, bộ nhớ, ảnh hưởng khi đổi camera và tỷ lệ thời gian đủ dữ liệu \\
+            \hline
+        \end{tabular}
+    \end{table}

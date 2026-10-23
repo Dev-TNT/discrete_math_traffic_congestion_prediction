@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Đầu vào và đầu ra của hệ thống}
+        \vspace{0.2cm}
+        \begin{tabular}{|p{3cm}|p{6cm}|p{6cm}|}
+            \hline
+            \textbf{Cấp xử lý} & \textbf{Đầu vào} & \textbf{Đầu ra} \\
+            \hline
+            Thu ảnh & Snapshot camera từ nguồn giao thông công cộng TP.HCM, tải bằng HTTP & Ảnh màu BGR được OpenCV giải mã \\
+            \hline
+            Nhận diện & Ảnh và trọng số \texttt{yolo26x.pt} & Khung nhận diện; số lượng người, ô tô, xe máy, xe buýt, xe tải \\
+            \hline
+            Xây dựng dữ liệu & Timestamp, số xe và WTI trên từng ảnh & CSV gồm 9 cột; dữ liệu tổng hợp theo phút \\
+            \hline
+            Dự báo học máy & 61 đặc trưng từ phút hiện tại và tối đa 60 phút quá khứ & 60 giá trị WTI tương ứng $t+1$ đến $t+60$ \\
+            \hline
+            Cảnh báo & Đường dự báo được làm mượt và ngưỡng 100 WTI & ETA đến đầu cửa sổ vượt ngưỡng; trạng thái cảnh báo và chất lượng dữ liệu \\
+            \hline
+            Vận hành & Quan sát thật, tham chiếu và dự báo & Dashboard PyQt5, nhật ký mẫu và dự báo trong SQLite \\
+            \hline
+        \end{tabular}
+    \end{table}

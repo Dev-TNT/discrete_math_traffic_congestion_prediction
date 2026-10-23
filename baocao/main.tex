@@ -10,6 +10,13 @@
 \usepackage{setspace}
 \singlespacing
 
+%Toán số học, ký hiệu toán học
+\usepackage{amsmath}
+
+%Graph, biểu đồ
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
 \usepackage{graphicx}
 \usepackage{authblk} 
 \usepackage{titlesec}
@@ -25,6 +32,7 @@
 
 % --- URL ---
 \usepackage[colorlinks=true, urlcolor=black, linkcolor=black, citecolor=blue]{hyperref}
+\graphicspath{{../}}
 
 % --- CẤU HÌNH TIÊU ĐỀ BÀI BÁO (Dành cho trang 2) ---
 \titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
@@ -89,37 +97,31 @@
 % =======================================================
 % TRANG 2: BẮT ĐẦU NỘI DUNG BÀI BÁO
 % =======================================================
+% --- MỤC LỤC ---
+\tableofcontents
+\newpage
+% ---------------
+
 \setcounter{page}{1} 
-\maketitle
+% \maketitle
 
-\begin{abstract}
-... Ghi gì đó ở đây ...
-\end{abstract}
 
-\section{Giới thiệu}
-Nút giao Ngã tư Hàng Xanh là một trong những nút giao thông trọng điểm và phức tạp tại khu vực TP.HCM, nơi tập trung lưu lượng phương tiện khổng lồ với đa dạng loại xe (xe máy, ô tô, xe tải, container). Do sự biến động liên tục của dòng xe theo từng khung giờ trong ngày và các ngày trong tuần, khu vực này thường xuyên rơi vào tình trạng ùn tắc cục bộ, gây ách tắc dây chuyền và ảnh hưởng lớn đến việc lưu thông. Do đó, bài toán cần đặt ra là cần xây dựng một hệ thống giám sát tự động có khả năng thu thập dữ liệu từ camera thời gian thực để mô hình hóa trạng thái giao thông, từ đó đưa ra dự đoán sớm về thời điểm ùn tắc.
 
-\section{Cơ sở lý thuyết}
-\subsection{Hàm số (Functions)}
-Theo định nghĩa trong giáo trình (Rosen, 8th Ed., Chương 2), hàm số $f: A \rightarrow B$ được sử dụng để thiết lập một phép gán mỗi phần tử của tập hợp $A$ với đúng một phần tử của tập hợp $B$. Trong bài toán này, $A$ là không gian trạng thái đầu vào chứa các vector dữ liệu lưu lượng đếm được từ khung hình camera (số xe máy, ô tô, xe tải, xe buýt), và $B$ là tập hợp các mức độ ùn tắc hoặc thời gian chờ dự kiến. Quá trình tiền xử lý dữ liệu còn áp dụng các hàm sàn (floor function) và hàm trần (ceiling function) để rời rạc hóa các giá trị thời gian liên tục thành các khoảng (time bins) cố định. Điều này giúp thuật toán dễ dàng phân loại và ánh xạ trạng thái giao thông với chi phí tính toán (Computational Cost) thấp nhất.
+% \begin{abstract}
+% ... Ghi gì đó ở đây ...
+% \end{abstract}
 
-\subsection{Hệ thức truy hồi (Recursion)}
-Lưu lượng giao thông hoạt động như một hệ nhân quả theo thời gian rời rạc, nghĩa là trạng thái ùn tắc tại thời điểm hiện tại chịu ảnh hưởng trực tiếp từ lưu lượng xe trong các mốc thời gian quá khứ. Dựa trên lý thuyết về quan hệ truy hồi (Rosen, 8th Ed., Chương 8), mật độ phương tiện tại thời điểm $t$, ký hiệu là $N_t$, được mô hình hóa dưới dạng một hệ thức truy hồi tuyến tính:
-\[
-N_t = c_1 N_{t-1} + c_2 N_{t-2} + \dots + c_k N_{t-k} + F(t)
-\]
-Trong đó, $c_i$ là các hằng số trọng số thể hiện mức độ ảnh hưởng của quá khứ, và $F(t)$ là hàm đánh giá tác động ngoại cảnh. Việc biểu diễn tính nhân quả thông qua hệ thức truy hồi cho phép phần mềm dự báo được lưu lượng luồng xe trong tương lai gần chỉ bằng cách truy xuất một vài trạng thái bộ nhớ gần nhất, giúp tối ưu hóa được độ phức tạp của thuật toán.
+\input{sections/01_phat_bieu_bai_toan.tex}
 
-\subsection{Đồ thị (Graphs) \& Quan hệ (Relations)}
-Không gian giao thông tại nút giao Hàng Xanh trong khung hình camera được trừu tượng hóa thành một đồ thị có hướng và có trọng số $G = (V, E)$ (Rosen, 8th Ed., Chương 10). Tập đỉnh $V$ đại diện cho các làn xe hoặc khu vực chờ, tập cạnh $E$ đại diện cho hướng đi của luồng phương tiện, và trọng số của cạnh chính là số lượng xe hiện hành được trích xuất từ camera. 
-Sự tương tác giữa các luồng xe được biểu diễn bằng một ma trận kề (Adjacency Matrix) đại diện cho một Quan hệ (Relation) $R$ trên tập $V$ (Rosen, 8th Ed., Chương 9). Chẳng hạn, nếu luồng xe đi thẳng từ làn $v_i$ gây xung đột và cản trở luồng xe rẽ trái từ làn $v_j$, hệ thống sẽ ghi nhận $(v_i, v_j) \in R$. Phân tích các ma trận quan hệ và bậc của các đỉnh (degree of vertices) trên đồ thị giúp thuật toán khoanh vùng chính xác các điểm nghẽn (bottlenecks) ngay bên trong giao lộ để phát ra cảnh báo kẹt xe.
+\input{sections/02_bo_du_lieu_va_phuong_phap_thu_thap.tex}
 
-\section{Data Collection \& Implementation}
-Test....
+\input{sections/03_quy_trinh_xu_ly_he_thong.tex}
 
-\section{Kết luận}
-...
+\input{sections/04_lua_chon_mo_hinh.tex}
 
+\input{sections/05_noi_bat_va_dong_gop.tex}
+
+\input{sections/06_bai_hoc_kinh_nghiem.tex}
 %  Chuyển phần mã nguồn xuống dưới cùng thành Phụ lục (Appendix) 
 \newpage
 \appendix

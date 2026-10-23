@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Các trạng thái hoạt động của hệ thống}
+        \vspace{0.2cm}
+        \begin{tabular}{|p{4cm}|p{12cm}|}
+            \hline
+            \textbf{Trạng thái} & \textbf{Ý nghĩa trong hệ thống} \\
+            \hline
+            \texttt{NORMAL} & Nhánh mô hình không phát hiện cửa sổ vượt ngưỡng nào trong 60 phút tới. \\
+            \hline
+            \texttt{PROVISIONAL} & Đang hoạt động ở chế độ ước lượng tạm thời và chưa phát hiện nguy cơ vượt ngưỡng. \\
+            \hline
+            \texttt{WATCH} & Phát hiện cửa sổ dự báo vượt ngưỡng, thời điểm bắt đầu xảy ra sau hơn 5 phút. \\
+            \hline
+            \texttt{WARNING} & Cửa sổ vượt ngưỡng bắt đầu trong vòng 5 phút tới, hoặc quan sát thực tế đã vượt ổn định. \\
+            \hline
+            \texttt{INSUFFICIENT\_DATA} & Dữ liệu đầu vào chưa đáp ứng đủ tiêu chuẩn để phát tín hiệu dự báo. \\
+            \hline
+            \texttt{MODEL\_ERROR} & Xảy ra lỗi trong quá trình suy luận hoặc lỗi cấu trúc dữ liệu bundle. \\
+            \hline
+        \end{tabular}
+    \end{table}

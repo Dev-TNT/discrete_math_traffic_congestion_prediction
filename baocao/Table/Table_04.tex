@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Ý nghĩa các cột trong tập dữ liệu}
+        \vspace{0.2cm}
+        \begin{tabular}{|p{4cm}|p{12cm}|}
+            \hline
+            \textbf{Cột CSV} & \textbf{Ý nghĩa và vai trò} \\
+            \hline
+            \texttt{timestamp} & Thời điểm bản ghi, định dạng YYYY-MM-DD HH:MM:SS \\
+            \hline
+            \texttt{person} & Số đối tượng người; không dùng làm đặc trưng dự báo hiện tại \\
+            \hline
+            \texttt{car, motorbike, bus, truck} & Số phát hiện của bốn loại phương tiện trong ảnh \\
+            \hline
+            \texttt{total} & Tổng số phát hiện của bốn loại xe \\
+            \hline
+            \texttt{WTI} & Điểm trọng số phương tiện; cơ sở tạo target theo phút \\
+            \hline
+            \texttt{WTI\_norm} & WTI nhân hệ số logarit theo tổng số xe; không dùng trong model hiện tại \\
+            \hline
+        \end{tabular}
+    \end{table}

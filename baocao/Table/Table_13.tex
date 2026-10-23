@@ -1,0 +1,19 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Chỉ số phát hiện vượt ngưỡng trên 956 origin của data2}
+        \label{tab:threshold_metrics}
+        \begin{tabular}{|l|c|c|}
+            \hline
+            \textbf{Chỉ số vượt ngưỡng, trên 956 origin} & \textbf{HGB làm mượt 3 phút} & \textbf{Tham chiếu cùng giờ} \\
+            \hline
+            Origin có tương lai vượt ngưỡng theo quy tắc & 530 & 530 \\
+            Cảnh báo đúng & 491 & 500 \\
+            Báo nhầm & 7 & 0 \\
+            Bỏ sót & 39 & 30 \\
+            Precision & 98,59\% & 100,00\% \\
+            Recall & 92,64\% & 94,34\% \\
+            F1 & 0,9553 & 0,9709 \\
+            ETA MAE trên origin cảnh báo đúng & 7,09 phút & 3,95 phút \\
+            \hline
+        \end{tabular}
+    \end{table}

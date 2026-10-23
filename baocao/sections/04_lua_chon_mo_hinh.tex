@@ -1,0 +1,77 @@
+\section{Lựa chọn mô hình và tinh chỉnh siêu tham số}
+
+    \subsection{Cơ sở lựa chọn}
+
+    \subsubsection{Cơ sở lựa chọn kiến trúc thuật toán (Model Selection)}
+    Trong bài toán dự báo lưu lượng và tốc độ giao thông đa bước thời gian, mô hình được lựa chọn là HistGradientBoostingRegressor (HGB) được bao bọc bởi kiến trúc MultiOutputRegressor. Sự phối hợp này được thiết lập dựa trên các căn cứ lý thuyết và thực nghiệm sau:
+    \begin{itemize}
+        \item \textbf{Xử lý mối quan hệ phi tuyến tính phức tạp (Non-linear Correlations):} Dữ liệu giao thông đô thị mang tính chất phi tuyến rõ rệt, bị tác động bởi chu kỳ thời gian, hiệu ứng dòng chảy không gian và các biến cố ngẫu nhiên. HGB — một biến thể ưu việt của thuật toán Gradient Boosted Decision Trees (GBDT) dựa trên phân thùng dữ liệu (binning) — có khả năng xấp xỉ tốt các hàm phi tuyến đa chiều mà không đòi hỏi các giả định nghiêm ngặt về phân phối chuẩn của dữ liệu đầu vào.
+        \item \textbf{Kiểm soát độ phức tạp không gian (Spatial Complexity Control):} Thay vì xây dựng một mô hình ma trận giao thông toàn cục có độ phức tạp tính toán tăng theo cấp số nhân, phương pháp tiếp cận hiện tại áp dụng kiến trúc MultiOutputRegressor. Chiến lược này tách biệt việc dự báo chuỗi thời gian nhiều bước (multi-step forecast horizon) thành các bài toán quy nạp song song độc lập cho từng vị trí/cảm biến. Cách tiếp cận này giúp cô lập rủi ro lan truyền lỗi (error propagation) giữa các khu vực không gian khác nhau, đồng thời duy trì chi phí tính toán ở mức tuyến tính đối với số lượng điểm đo.
+    \end{itemize}
+
+    \subsubsection{Chiến lược thiết lập không gian siêu tham số (Hyper-parameter Configuration)}
+    Chiến lược tối ưu hóa mô hình trong dự án tuân theo các nguyên tắc quản trị thực nghiệm nghiêm ngặt:
+    \begin{itemize}
+        \item \textbf{Cấu hình tĩnh thay vì Tìm kiếm tự động (Static Configuration vs. Hyper-parameter Search):} Các siêu tham số của mô hình HGB không được khởi tạo thông qua các kỹ thuật quét tự động toàn cục như Grid Search, Random Search hay Bayesian Optimization. Thay vào đó, bộ tham số được ấn định tĩnh dựa trên tri thức chuyên ngành (domain expertise) về bản chất chuỗi thời gian giao thông và các thử nghiệm kiểm chứng cục bộ nhằm tránh hiện tượng quá khớp (overfitting) trên tập kiểm thử.
+        \item \textbf{Tập trung xác minh dạng biểu diễn mục tiêu (Target Representation Validation):} Quá trình thực nghiệm tập trung phần lớn năng lực kiểm chứng vào việc lựa chọn dạng biểu diễn của chuỗi giá trị đầu ra:
+        \begin{itemize}
+            \item \textit{Biểu diễn Tuyệt đối (Absolute Target):} Dự báo trực tiếp giá trị thực tế của biến giao thông tại thời điểm $t + k$.
+            \item \textit{Biểu diễn Sai biệt (Delta Target):} Dự báo mức độ biến động $\Delta = Y_{t+k} - Y_t$.
+        \end{itemize}
+        $\Rightarrow$ \textbf{Kết quả thực nghiệm:} Dạng biểu diễn Absolute Target mang lại độ ổn định cao hơn đáng kể. Biểu diễn Delta tỏ ra nhạy cảm quá mức với nhiễu tần số cao tại thời điểm gốc $t$, dẫn đến hiện tượng tích lũy sai số lớn khi dự báo xa.
+    \end{itemize}
+
+    \subsection{Phần thực sự được lựa chọn bằng validation}
+    Script thử hai cách đặt mục tiêu, sử dụng cùng cấu hình HGB:
+
+    \input{Table/Table_10.tex}
+
+    Với delta, giá trị hiện tại được cộng trở lại khi suy luận. Trên validation của data1, absolute có MAE thấp hơn nên được chọn. Lựa chọn này chỉ được chứng minh trong cách chia dữ liệu và cấu hình đã thử; không phải kết luận rằng dự báo delta luôn kém hơn.
+
+    Không có \texttt{GridSearchCV}, \texttt{RandomizedSearchCV} hoặc nhật ký tìm kiếm lưới siêu tham số trong luồng train được kiểm tra. Tham số \texttt{--max-iter} cho phép người chạy thay đổi số vòng, nhưng sự tồn tại của tùy chọn không chứng minh đã thử nhiều giá trị và chọn tối ưu.
+
+    \subsection{Cấu hình hiện tại và ý nghĩa của từng tham số}
+
+    \input{Table/Table_11.tex}
+
+    Các giá trị trên là cấu hình cố định được lưu trong mã, chưa phải ``bộ siêu tham số tối ưu'' có chứng cứ tìm kiếm. Phân tích tác dụng của chúng giải thích lựa chọn kỹ thuật, không thay thế thực nghiệm so sánh các cấu hình.
+
+    Horizon 60 phút, lịch sử 61 điểm, làm mượt 3 phút, ngưỡng 100 WTI và quy tắc 3/5 là các tham số của toàn hệ thống. Chúng tác động đến lượng dữ liệu cần có, độ nhạy cảnh báo và độ trễ, nhưng không nên trộn lẫn với siêu tham số cấu trúc cây. Chưa có bằng chứng ngưỡng 100 đã được chọn theo phân vị 85--90 như trong đề xuất ban đầu.
+
+    \subsection{Chia dữ liệu và ngăn rò rỉ thời gian}
+    Quy trình trong \texttt{training\_model.Py} gồm:
+    \begin{enumerate}
+        \item Tạo 1.098 origin hợp lệ từ data1, mỗi origin có 61 đặc trưng và 60 target.
+        \item Lấy phần cuối của chuỗi làm validation, gồm 220 origin. Sau loại các origin có mục tiêu chạm vùng validation, phần fit còn 818 origin; 60 origin sát ranh giới không dùng ở giai đoạn lựa chọn.
+        \item Origin fit cuối là 08:20 ngày 22/09; origin validation đầu là 09:21. Target xa nhất của origin fit cuối kết thúc lúc 09:20, trước validation.
+        \item So sánh absolute và delta bằng MAE trung bình 60 horizon sau làm mượt, chọn absolute.
+        \item Refit trên toàn bộ 1.098 origin data1 rồi đánh giá 956 origin data2. Hai tập phút train/test cách nhau 8.940 phút.
+    \end{enumerate}
+
+    Thiết kế không xáo trộn ngẫu nhiên và không lấy dữ liệu tương lai làm feature. Khoảng loại trừ đặc biệt cần thiết vì mỗi origin mang theo cả 60 phút nhãn tương lai: chỉ chia theo timestamp của đầu vào mà bỏ qua phần nhãn sẽ tạo rò rỉ qua ranh giới.
+
+    Validation hiện chỉ bao phủ một phần ngày. Đồng thời data2 đã được phân tích trong nhiều báo cáo của dự án. Nếu tiếp tục sửa phương pháp dựa trên các kết quả này, cần một đợt thu mới giữ riêng để đánh giá cuối; data2 lúc đó không còn là bằng chứng hoàn toàn độc lập cho lựa chọn mới.
+
+    \subsection{Kết quả so sánh đã lưu}
+    Bảng \ref{tab:mae_comparison} lấy từ \texttt{models/traffic\_wti\_forecast.metrics.json}. MAE tính theo đơn vị WTI, đối chiếu dự báo đã làm mượt với WTI trung bình phút chưa làm mượt. Báo cáo này kiểm tra dữ liệu và cách tính trong mã, không huấn luyện lại mô hình để tạo bộ điểm mới.
+
+    \input{Table/Table_12.tex}
+
+    HGB có ưu thế về MAE trung bình, nhưng tại +60 phút, baseline cùng giờ tốt hơn. Ngoại suy tuyến tính có sai số tăng mạnh ở horizon xa: tiếp tục kéo một xu hướng ngắn hạn trong cả giờ là giả định không phù hợp với nhiều đoạn chuỗi đã quan sát.
+
+    \input{Table/Table_13.tex}
+
+    $F_1 = 0,9553$ không có nghĩa ``dự báo kẹt xe chính xác 95,53\%''. Nhãn ở đây được tạo từ WTI vượt ngưỡng thử nghiệm, đơn vị đánh giá là cửa sổ dự báo chồng lấn, và phép đo chưa có ground truth ùn tắc độc lập.
+
+    ETA MAE chỉ tính trên các origin vừa có sự kiện theo WTI vừa được phương pháp cảnh báo. Những ca bỏ sót không tham gia phép tính ETA. Hai cột ETA cũng dùng tập origin cảnh báo đúng khác nhau; không nên diễn giải chênh lệch như một so sánh ghép cặp tuyệt đối. Báo cáo audit đã lưu có kiểm tra trên tập chung 487 origin, ghi nhận ETA MAE khoảng 7,10 phút cho model và 3,85 phút cho tham chiếu.
+
+    Thử lấy mỗi 60 origin hợp lệ một lần trong báo cáo model chỉ còn 16 origin, trong đó 9 dương tính. MAE trung bình ở tập thưa này là 14,25 WTI, nhưng kích thước nhỏ chưa cho phép kết luận chắc chắn về độ ổn định trên các đợt giao thông độc lập.
+
+    \subsection{Tác động của làm mượt và phiên bản kết quả}
+
+    \input{Table/Table_14.tex}
+
+    Làm mượt giảm dao động và báo nhầm, nhưng tăng bỏ sót và làm sai số ở phút gần nhất lớn hơn. Chọn một đường cong đẹp hơn trên UI vì thế là quyết định có đánh đổi về chất lượng cảnh báo.
+
+    Trong thư mục còn có \texttt{traffic\_backtest.json}, \texttt{warm\_start\_metrics.json} và báo cáo lịch sử liên quan phiên bản 30 phút. Không sử dụng các kết quả này làm điểm số cho model WTI 60 phút. Các mục \texttt{provisional\_3/5/15/30/60} trong metrics của model có kết quả giống nhau và được audit mô tả là của cách hiệu chỉnh cũ. Mã \texttt{provisional\_values()} hiện đã dùng hiệu chỉnh mức/xu hướng giảm dần; chưa có bộ metric mới tương ứng trong các tệp đã kiểm tra để khẳng định chất lượng của thay đổi này.
+

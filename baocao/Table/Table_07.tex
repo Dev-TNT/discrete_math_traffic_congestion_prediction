@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+        \centering
+        \caption{Các thành phần chính và trách nhiệm trong hệ thống}
+        \vspace{0.2cm}
+        \begin{tabular}{|p{4.5cm}|p{11.5cm}|}
+            \hline
+            \textbf{Thành phần} & \textbf{Trách nhiệm chính} \\
+            \hline
+            \texttt{core/Get\_frame.py} & Tải và giải mã ảnh từ camera giao thông. \\
+            \hline
+            \texttt{core/Yolo\_detect.py} & Nhận diện, đếm số lượng phương tiện theo từng lớp và tính WTI. \\
+            \hline
+            \texttt{core/vision\_worker.py} & Thu ảnh và chạy nhận diện ngoài luồng giao diện người dùng (background thread). \\
+            \hline
+            \texttt{core/traffic\_features.py} & Kiểm tra tính hợp lệ của mẫu, tổng hợp theo phút, tạo đặc trưng và ma trận mục tiêu. \\
+            \hline
+            \texttt{training\_model.Py} & Lựa chọn target mode, huấn luyện (fit), đánh giá và lưu trữ model bundle. \\
+            \hline
+            \texttt{core/traffic\_forecast.py} & Kiểm tra bundle, suy luận dự báo, chạy nhánh dự báo tạm thời và tính ETA. \\
+            \hline
+            \texttt{core/forecast\_worker.py} & Quản lý lịch sử chuỗi thời gian, hoàn tất phút và cập nhật dữ liệu dự báo. \\
+            \hline
+            \texttt{core/traffic\_store.py} & Lưu trữ và khôi phục mẫu quan sát, các phiên bản dự báo bằng SQLite. \\
+            \hline
+            \texttt{ui/traffic\_forecast\_chart.py} & Trực quan hóa chuỗi lịch sử, đường dự báo, đường tham chiếu và ngưỡng cảnh báo. \\
+            \hline
+        \end{tabular}
+    \end{table}

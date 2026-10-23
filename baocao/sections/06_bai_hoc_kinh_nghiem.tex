@@ -1,0 +1,37 @@
+\section{Bài học kinh nghiệm}
+
+    \subsection{Định nghĩa đúng đại lượng trước khi tối ưu mô hình}
+    WTI tiện cho việc tạo dữ liệu có cấu trúc, nhưng nó là một phép đo thay thế. Nhiều xe trong ảnh có thể vẫn đang di chuyển tốt; một hàng xe ít hơn có thể đang đứng yên. Chỉ tối ưu dự báo WTI không tự giải quyết được khoảng cách giữa ``đông xe trong khung hình'' và ``ùn tắc gây chậm trễ''.
+
+    Bước phát triển tiếp theo nên bắt đầu từ nhãn giao thông độc lập và tiêu chí quan sát rõ ràng, như trạng thái dòng xe hoặc hàng chờ trong một vùng quan tâm. Khi đó mới có cơ sở hiệu chuẩn trọng số, ngưỡng và đánh giá giá trị của cảnh báo. Đây là hướng cải thiện từ giới hạn đã phát hiện, chưa phải chức năng hiện có.
+
+    \subsection{Không có ô trống không có nghĩa chuỗi liên tục}
+    Cả hai CSV đều đầy đủ giá trị trên mỗi dòng, nhưng có 5 phút hoàn toàn mất mẫu. Nếu chỉ kiểm tra \texttt{isna()} trên bảng gốc, hệ thống sẽ bỏ qua những khoảng chưa từng được ghi. Chuẩn hóa trục thời gian, giữ NaN và đo số mẫu mỗi phút là cần thiết trước khi tạo lag hoặc kết luận camera đang hoạt động ổn định.
+
+    Chính sách chất lượng cũng cần thống nhất giữa train, backtest và vận hành. Hiện nhánh live yêu cầu tối thiểu 3 mẫu/phút trong lịch sử, còn tập supervised chỉ loại phần thiếu. Đồng bộ tiêu chí này sẽ giúp phép đánh giá phản ánh đúng các thời điểm model thực sự được phép dự báo.
+
+    \subsection{Baseline phải phù hợp với cấu trúc dữ liệu}
+    Giữ nguyên giá trị hiện tại là một đối chứng dễ hiểu, nhưng chưa đủ khi chuỗi có biến động theo giờ. Baseline cùng giờ từ data1 đạt MAE rất gần HGB và tốt hơn ở F1 cùng ETA trong lần đánh giá đã lưu. Vì vậy ``thắng persistence'' chưa đủ để khẳng định phần học máy mang lại lợi ích rõ rệt cho mục tiêu cảnh báo sớm.
+
+    Các lần đánh giá sau nên tiếp tục giữ baseline theo giờ, đồng thời kiểm tra trên nhiều đợt mới. Chưa nên biến kết quả một capture thành kết luận HGB hoặc baseline sẽ luôn vượt trội.
+
+    \subsection{Đường dự báo đẹp và cảnh báo hữu ích là hai mục tiêu khác nhau}
+    Làm mượt giảm MAE trung bình và báo nhầm, nhưng tăng bỏ sót từ 32 lên 39 origin. Điều này cho thấy tham số hiển thị có thể thay đổi hành vi cảnh báo. Khi thiết kế tiếp, cần xác định trước chi phí bỏ sót, mức báo nhầm chấp nhận được và thời gian cảnh báo hữu ích; không chỉ chọn cấu hình theo một MAE trung bình.
+
+    ETA MAE cũng cần được báo cùng recall và số ca không có ETA. Một phương pháp chỉ cảnh báo các ca dễ có thể có ETA đẹp nhưng bỏ qua nhiều tình huống cần quan tâm.
+
+    \subsection{Bảo toàn thứ tự thời gian cả trong học và chấm điểm}
+    Khoảng loại trừ 60 phút ở ranh giới validation là bài học có thể tái sử dụng cho dự báo đa bước: ranh giới phải xét toàn bộ vùng target. Tương tự, nhật ký dự báo phải được lưu trước khi dữ liệu tương lai đến, và phép chấm không được chọn các bản sửa muộn để làm kết quả tốt hơn.
+
+    Các cửa sổ chồng lấn giúp tăng số mẫu huấn luyện nhưng không tăng tương ứng số tình huống độc lập. Báo cáo chất lượng nên bổ sung đánh giá theo đợt sự kiện, ngày thu và thời điểm khởi phát; đồng thời công bố tỷ lệ thời gian hệ thống phải tạm ngừng vì dữ liệu không đủ.
+
+    \subsection{Quản lý phiên bản là một phần của độ tin cậy}
+    Thư mục dự án lưu cả đề xuất ban đầu, báo cáo total 30 phút, bản chuyển sang WTI 60 phút, audit và các sửa đổi vận hành. Đọc một báo cáo cũ mà không đối chiếu code có thể dẫn đến mô tả sai target, ngưỡng, thời điểm ghi timestamp, cách dự báo tạm thời hoặc khả năng lưu dữ liệu.
+
+    Mỗi kết quả về sau nên gắn với mã nguồn, dữ liệu, model, cấu hình và môi trường cụ thể. Metadata hiện có đã là nền tảng tốt; cần tiếp tục đảm bảo mọi thay đổi ở logic tạm thời hoặc điều kiện đầu vào đều có đánh giá tương ứng, thay vì dùng lại điểm số của phiên bản trước.
+
+    \subsection{Ưu tiên cho vòng phát triển tiếp theo}
+
+    \input{Table/Table_15.tex}
+
+    Hệ thống đã tạo được nền tảng để kiểm tra những câu hỏi này bằng dữ liệu: có quy trình thu, feature dùng chung, baseline, model đa bước và nhật ký dự báo. Giá trị của vòng phát triển tiếp theo nằm ở việc bổ sung bằng chứng về phép đo và hiệu quả cảnh báo, trước khi tăng độ phức tạp của mô hình.

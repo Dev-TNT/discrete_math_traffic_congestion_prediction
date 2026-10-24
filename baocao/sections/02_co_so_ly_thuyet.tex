@@ -1,0 +1,159 @@
+\section{Cơ sở lý thuyết Cấu trúc Rời rạc}
+
+Để giải quyết bài toán giám sát và dự báo giao thông từ dữ liệu chuỗi thời gian, toàn bộ quy trình từ tiền xử lý, trích xuất đặc trưng, huấn luyện mô hình học máy đến logic cảnh báo sớm được xây dựng dựa trên các cấu trúc toán học rời rạc cốt lõi. Bảng trên tổng hợp mối liên kết trực tiếp giữa các chủ đề trong chương trình học và các thành phần cài đặt trong mã nguồn dự án.
+
+\input{Table/Table_16.tex}
+
+\subsection{Tập hợp và Ánh xạ Hàm Số (Sets \& Functions)}
+
+Hệ thống mô hình hóa toàn bộ quá trình thu thập và biến đổi dữ liệu thành các quan hệ tập hợp và ánh xạ hàm xác định:
+
+\subsubsection{Cấu trúc Tập hợp trong biểu diễn dữ liệu (Sets)}
+\begin{itemize}
+    \item \textbf{Tập hợp lớp phương tiện mục tiêu ($C$):} Từ tập nhãn nhận diện tổng quát của detector, hệ thống lọc và định nghĩa tập con hữu hạn gồm 4 loại phương tiện cơ giới đường bộ tham gia vào bài toán:
+    \begin{equation*}
+        C = \{\text{car}, \text{motorbike}, \text{bus}, \text{truck}\}
+    \end{equation*}
+    Mỗi phần tử $c \in C$ gắn liền với một giá trị đếm số lượng tức thời trên từng khung hình snapshot; các đối tượng ngoài tập này (như \texttt{person}) bị loại bỏ hoàn toàn.
+
+    \item \textbf{Tập thời gian rời rạc ($T$):} Trục thời gian liên tục được phân hoạch thành một tập có thứ tự gồm các mốc phút hoàn tất:
+    \begin{equation*}
+        T = \{t_1, t_2, \dots, t_N\} \subset \mathbb{N}
+    \end{equation*}
+    trong đó mỗi phần tử $t \in T$ đại diện cho khoảng thời gian đóng $[t-1, t)$ đã tổng hợp mẫu.
+
+    \item \textbf{Không gian đặc trưng ($X$) và không gian mục tiêu ($Y$):} 
+    Dữ liệu được mô hình hóa qua các không gian tích Descartes nhiều chiều:
+    \begin{itemize}
+        \item Không gian đặc trưng đầu vào: $X \subseteq \mathbb{R}^{61}$, mỗi quan sát tại phút $t$ là một vector $\mathbf{x}_t \in X$ gồm 61 đặc trưng thời gian và trạng thái trễ lịch sử.
+        \item Không gian mục tiêu dự báo: $Y \subseteq \mathbb{R}^{60}$, với vector $\mathbf{y}_t = [WTI_{t+1}, WTI_{t+2}, \dots, WTI_{t+60}]^T \in Y$ đại diện cho chuỗi tải trọng giao thông trong 60 phút tiếp theo.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Ánh xạ Hàm số (Functions)}
+\begin{itemize}
+    \item \textbf{Hàm tính chỉ số tải trọng giao thông trên từng khung hình ($f_{\text{WTI}}$):} 
+    Ánh xạ từ số lượng đếm được của 4 loại phương tiện trong tập $C$ sang giá trị tải trọng giao thông tức thời của khung hình thứ $k$:
+    \begin{equation*}
+        f_{\text{WTI}}: \mathbb{N}_0^4 \to \mathbb{R}_{\ge 0}, \quad w_k = 4 n_{\text{car}} + 1 n_{\text{motorbike}} + 7 n_{\text{bus}} + 6 n_{\text{truck}}
+    \end{equation*}
+    trong đó $n_c$ ($c \in C$) là số lượng xe tương ứng nhận diện được, còn các hệ số $(4, 1, 7, 6)$ là trọng số quy đổi mức độ chiếm dụng mặt đường của từng loại xe.
+
+    \item \textbf{Hàm tổng hợp phút ($g_{\text{mean}}$):} 
+    Tại mỗi phút $t$, gọi $K_t = \{w_1, w_2, \dots, w_m\}$ là tập các giá trị WTI hợp lệ đo được từ $m$ khung hình trong phút đó (với điều kiện đủ tin cậy $|K_t| = m \ge 3$). Giá trị WTI đại diện cho phút $t$ được xác định bằng hàm trung bình mẫu:
+    \begin{equation*}
+        WTI_t = g_{\text{mean}}(K_t) = \frac{1}{|K_t|} \sum_{w \in K_t} w
+    \end{equation*}
+
+    \item \textbf{Hàm làm mượt trung bình trượt lùi 3 phút ($s$):} 
+    Nhằm triệt tiêu rung nhiễu ngẫu nhiên trước khi trực quan hóa và đưa vào bộ cảnh báo, giá trị WTI đã làm mượt tại phút thứ $t$ (ký hiệu là $\overline{WTI}_t$) được xác định thông qua hàm trung bình trượt lùi 3 điểm:
+    \begin{equation*}
+        s: \mathbb{R}^3 \to \mathbb{R}, \quad \overline{WTI}_t = s(WTI_t, WTI_{t-1}, WTI_{t-2}) = \frac{WTI_t + WTI_{t-1} + WTI_{t-2}}{3}
+    \end{equation*}
+
+    \item \textbf{Ánh xạ hồi quy đa bước (\texttt{MultiOutputRegressor}):} 
+    Mô hình dự báo là một hàm vector $F: X \to Y$ (từ không gian đặc trưng $X \subseteq \mathbb{R}^{61}$ sang không gian mục tiêu $Y \subseteq \mathbb{R}^{60}$), được cấu thành từ 60 hàm hồi quy vô hướng độc lập $\{f_1, f_2, \dots, f_{60}\}$:
+    \begin{equation*}
+        F(\mathbf{x}_t) = \begin{bmatrix} f_1(\mathbf{x}_t) \\ f_2(\mathbf{x}_t) \\ \vdots \\ f_{60}(\mathbf{x}_t) \end{bmatrix} = \begin{bmatrix} \widehat{WTI}_{t+1} \\ \widehat{WTI}_{t+2} \\ \vdots \\ \widehat{WTI}_{t+60} \end{bmatrix} \quad \text{với } f_h: \mathbb{R}^{61} \to \mathbb{R} \quad (\forall h \in \{1, 2, \dots, 60\})
+    \end{equation*}
+    Mỗi hàm $f_h$ ước lượng trực tiếp giá trị tại phút tương lai thứ $h$, khắc phục hiện tượng trôi dạt và tích lũy sai số so với phương pháp hồi quy đệ quy lặp.
+
+    \item \textbf{Hàm lượng tử hóa phân thùng rời rạc ($\phi$):} 
+    Trong thuật toán \texttt{HistGradientBoosting}, các đặc trưng thực liên tục được rời rạc hóa thành 256 giá trị số nguyên (từ 0 đến 255) thông qua hàm sàn:
+    \begin{equation*}
+        \phi: \mathbb{R} \to \{0, 1, \dots, 255\}, \quad \phi(x) = \min\left(255, \, \left\lfloor \frac{x - x_{\min}}{\Delta} \right\rfloor\right)
+    \end{equation*}
+    trong đó $\Delta = \frac{x_{\max} - x_{\min}}{256}$ là độ rộng mỗi thùng phân vị. Ánh xạ này chuyển bài toán tìm ngưỡng phân nhánh tối ưu của cây quyết định từ không gian thực liên tục sang duyệt trên tập hữu hạn 256 trạng thái, giúp giảm đáng kể độ phức tạp tính toán và tăng tốc độ suy luận.
+\end{itemize}
+
+\subsection{Logic Mệnh đề (Propositional Logic)}
+
+Để chuyển đổi chuỗi giá trị dự báo định lượng thành tín hiệu điều hành trực quan trên hệ thống, quy trình ra quyết định được thiết lập dựa trên các nguyên lý cơ bản của Logic mệnh đề (Propositional Logic) thông qua phép đánh giá chân trị và các phép nối logic hội ($\land$), tuyển ($\lor$):
+
+\begin{itemize}
+    \item \textbf{Mệnh đề điều kiện đơn ($P(t)$):} Xét trên giá trị WTI đã được làm mượt qua hàm trượt 3 phút $\overline{WTI}_t = s(WTI_t, WTI_{t-1}, WTI_{t-2})$, mệnh đề giao thông tại mốc thời gian $t$ được định nghĩa:
+    \begin{quote}
+        $P(t)$: ``Chỉ số WTI đã làm mượt tại phút thứ $t$ vượt ngưỡng cảnh báo an toàn ($\overline{WTI}_t > 100$).''
+    \end{quote}
+    Chân trị của mệnh đề $P(t)$ nhận giá trị trong tập chân trị chuẩn $\{\mathbf{T}, \mathbf{F}\}$:
+    \begin{equation*}
+        P(t) \equiv \begin{cases} 
+        \mathbf{T} & \text{khi } \overline{WTI}_t > 100 \\ 
+        \mathbf{F} & \text{khi } \overline{WTI}_t \le 100 
+        \end{cases}
+    \end{equation*}
+
+    \item \textbf{Quy tắc 3/5 ($C(t)$):} Nhằm loại bỏ các cảnh báo sai do các đỉnh xung nhiễu xuất hiện đột biến trong một phút đơn lẻ, hệ thống áp dụng quy tắc cảnh báo đa số trên cửa sổ trượt $W_t$ kích thước 5 phút: \textit{Kích hoạt cảnh báo khi có ít nhất 3 trong 5 phút gần nhất thỏa mãn ngưỡng}. Mệnh đề phức hợp $C(t)$ được biểu diễn bằng phép tuyển ($\lor$) của các liên kết hội ($\land$) trên các tập con thời gian:
+    \begin{equation*}
+    C(t) \equiv \bigvee_{\substack{S \subseteq \{0,1,2,3,4\} \\ |S| \ge 3}} \left( \bigwedge_{i \in S} P(t-i) \right)
+    \end{equation*}
+
+    \item \textbf{Hàm ước lượng thời gian đến ngưỡng (ETA Function):}
+    Dựa trên mệnh đề cảnh báo phức hợp $C(t)$, thời gian ước lượng đến khi xảy ra nguy cơ ùn tắc (Estimated Time of Arrival - ETA) được mô hình hóa thành một hàm số tìm mốc thời gian tương lai sớm nhất thỏa mãn chân trị logic:
+    \begin{equation*}
+        \text{ETA}(t) = \begin{cases}
+    0 & \text{nếu } C(t) \text{ là Đúng (True)} \\
+    \min \big\{ h \in \{1, \dots, 56\} \mid C(t+h) \text{ nhận giá trị Đúng} \big\} & \text{nếu } \exists h \text{ thỏa mãn} \\
+    \infty & \text{nếu không tìm thấy cửa sổ thỏa mãn}
+\end{cases}
+    \end{equation*}
+    trong đó $C(t+h)$ là mệnh đề kiểm tra quy tắc 3/5 phút trên cửa sổ dự báo tương lai $\{t+h, t+h+1, \dots, t+h+4\}$. Giá trị ETA được gán chính xác bằng thời điểm bắt đầu ($t+h$) của cửa sổ đầu tiên được kích hoạt.
+\end{itemize}
+
+Hệ thống chỉ kích hoạt trạng thái báo động (\texttt{WARNING}) và tính toán thời gian dự kiến đến ngưỡng (ETA) trên giao diện giám sát khi và chỉ khi mệnh đề $C(t)$ nhận chân trị $\mathbf{T}$. Cách tiếp cận này đảm bảo suy luận logic chặt chẽ, loại bỏ hoàn toàn các dao động ngẫu nhiên trong chuỗi thời gian.
+
+
+\subsection{Hệ thức Truy hồi (Recursion)}
+\label{subsec:recursion}
+
+Để mô hình hóa sự phụ thuộc thời gian của dòng giao thông, hệ thống tiếp cận chuỗi số liệu quan sát dưới dạng các dãy số rời rạc và xây dựng các biến đặc trưng dựa trên nguyên lý của hệ thức truy hồi bậc cao:
+
+\begin{itemize}
+    \item \textbf{Mô hình hóa trạng thái phụ thuộc quá khứ:} 
+    Trong lý thuyết dãy số, giá trị của một số hạng tại bước $t$ được xác định thông qua các số hạng đứng trước nó trong dãy. Hệ thống thiết lập tập chỉ số trễ hữu hạn $L$ gồm 8 bước thời gian chọn lọc:
+    \begin{equation*}
+        L = \{1, 2, 3, 5, 10, 15, 30, 60\} \subset \mathbb{N}
+    \end{equation*}
+    Mỗi thuộc tính trễ tương ứng với một số hạng quá khứ bậc $l$ của dãy thời gian:
+    \begin{equation*}
+        x_t^{(l)} = WTI_{t-l} \quad (\forall l \in L)
+    \end{equation*}
+
+    \item \textbf{Không gian đặc trưng trễ nhị biến:} 
+    Cấu trúc truy hồi này được áp dụng đồng thời cho hai chuỗi dữ liệu quan sát: chuỗi tổng số lượng phương tiện (\texttt{total}) và chuỗi tải trọng giao thông (\texttt{WTI}):
+    \begin{equation*}
+        \mathbf{x}_{\text{lag}, t} = \Big[ \big(\text{total}_{t-l}\big)_{l \in L}, \, \big(WTI_{t-l}\big)_{l \in L} \Big] \in \mathbb{R}^{16}
+    \end{equation*}
+    Tập hợp 16 biến trễ này đóng vai trò cung cấp điều kiện lịch sử ban đầu cho mô hình suy luận, bao quát các phụ thuộc từ ngắn hạn (1--3 phút), trung hạn (5--15 phút) đến dài hạn (30--60 phút).
+\end{itemize}
+
+\subsection{Cấu trúc Cây Quyết định trong Mô hình Hồi quy (Trees)}
+\label{subsec:trees}
+
+Thuật toán dự báo cốt lõi của hệ thống là \texttt{HistGradientBoostingRegressor} (HGB), hoạt động dựa trên lý thuyết đồ thị dạng cây, cụ thể là các \textbf{Cây nhị phân có gốc (Rooted Binary Trees)}:
+
+\begin{itemize}
+    \item \textbf{Cấu trúc Cây nhị phân $\mathcal{T} = (V, E)$:} 
+    Mỗi cây quyết định trong mô hình là một đồ thị có hướng không chu trình:
+    \begin{itemize}
+        \item Tập đỉnh $V$ gồm đỉnh gốc $v_0$ (root node), tập các đỉnh trong $V_I$ (internal decision nodes) và tập các đỉnh lá $V_L$ (leaf nodes), thỏa mãn $V = V_I \cup V_L$ và $V_I \cap V_L = \emptyset$.
+        \item Mỗi đỉnh trong $v \in V_I$ thực hiện một phép kiểm tra điều kiện nhị phân trên một đặc trưng phân thùng rời rạc $x_j \le \theta$, tạo thành đúng hai cung rẽ nhánh (con trái và con phải).
+        \item Mỗi đỉnh lá $u \in V_L$ lưu trữ một giá trị dự báo vô hướng cố định $\gamma_u \in \mathbb{R}$, đại diện cho giá trị xấp xỉ phần dư (residual) của phân vùng không gian tương ứng.
+    \end{itemize}
+
+    \item \textbf{Ràng buộc số nút lá và kiểm soát độ phức tạp đồ thị:} 
+    Trong mã nguồn huấn luyện, tham số khống chế độ phức tạp của cây được thiết lập cố định ở mức \texttt{max\_leaf\_nodes = 15}. Theo định lý cấu trúc cây nhị phân đầy đủ, tổng số đỉnh $|V|$ của cây bị chặn trên chặt chẽ bởi số đỉnh lá $|V_L|$:
+    \begin{equation*}
+        |V_L| \le 15 \implies |V| \le 2|V_L| - 1 \le 29
+    \end{equation*}
+    Hệ quả là chiều sâu cực đại của cây bị giới hạn (chiều sâu $h \le 14$), giúp mô hình không bị quá khớp (overfitting) với các biến động cục bộ của dữ liệu huấn luyện.
+
+    \item \textbf{Chuỗi cây tăng cường (Additive Tree Ensemble):} 
+    Mỗi bộ hồi quy trong số 60 mô hình dự báo độc lập của \texttt{MultiOutputRegressor} được tạo thành từ một tổ hợp tuyến tính gồm $M = 200$ cây nhị phân:
+    \begin{equation*}
+        \widehat{WTI}_{t+h} = f_h(\mathbf{x}_t) = f_{h}^{(0)}(\mathbf{x}_t) + \eta \sum_{m=1}^{200} h_m(\mathbf{x}_t)
+    \end{equation*}
+    trong đó $h_m(\mathbf{x}_t)$ là ánh xạ bước rời rạc do cây nhị phân thứ $m$ sinh ra và $\eta = 0.05$ là tốc độ học (learning rate).
+\end{itemize}
+
+Cấu trúc cây nhị phân giới hạn 15 lá kết hợp với thuật toán phân thùng 256 mức cho phép mô hình đạt tốc độ suy luận nhanh dưới 5 ms trên luồng ngầm của ứng dụng PyQt5, đáp ứng yêu cầu giám sát thời gian thực tại nút giao.

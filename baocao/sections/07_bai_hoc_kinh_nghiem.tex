@@ -1,0 +1,18 @@
+\section{Bài học kinh nghiệm}
+
+\subsection{Bản chất phép đo WTI và tính toàn vẹn chuỗi thời gian}
+WTI là phép đo thay thế tiện cho dữ liệu có cấu trúc, nhưng chưa giải quyết được khoảng cách giữa ``đông xe trong khung hình'' và ``ùn tắc gây chậm trễ''. Hướng phát triển tiếp theo cần bắt đầu từ nhãn giao thông độc lập (dòng xe, hàng chờ trong vùng quan tâm) để hiệu chuẩn trọng số, ngưỡng và giá trị cảnh báo.
+
+Bên cạnh đó, dữ liệu đầy đủ trên mỗi dòng không đồng nghĩa chuỗi liên tục (thực tế có 5 phút mất mẫu hoàn toàn). Hệ thống cần chuẩn hóa trục thời gian, đo số mẫu mỗi phút và đồng bộ chính sách chất lượng (yêu cầu tối thiểu 3 mẫu/phút) xuyên suốt giữa huấn luyện, backtest và vận hành trực tiếp.
+
+\subsection{Đánh giá mô hình: Baseline, bảo toàn thời gian và đánh đổi khi làm mượt}
+Baseline cùng giờ từ data1 đạt MAE rất gần HGB và tốt hơn ở F1 cùng ETA, cho thấy việc chỉ vượt qua baseline giữ nguyên giá trị hiện tại (persistence) là chưa đủ để khẳng định hiệu quả cảnh báo sớm. Phép đánh giá cần tiếp tục duy trì baseline theo giờ trên nhiều đợt thu mới.
+
+Về mặt cảnh báo, làm mượt giúp giảm MAE và báo nhầm nhưng lại làm tăng số ca bỏ sót từ 32 lên 39 origin. Do đó, cần xác định trước chi phí bỏ sót và đánh giá ETA đi kèm recall thay vì chỉ tối ưu theo một MAE trung bình. Ngoài ra, việc đánh giá phải bảo toàn thứ tự thời gian: giữ khoảng loại trừ 60 phút ở ranh giới validation, lưu nhật ký dự báo trước khi dữ liệu tương lai đến, và lưu ý các cửa sổ chồng lấn không làm tăng số tình huống kiểm thử độc lập.
+
+\subsection{Quản lý phiên bản và ưu tiên phát triển tiếp theo}
+Quản lý phiên bản là một phần của độ tin cậy để tránh sai lệch giữa tài liệu cũ và mã nguồn thực tế (về target, ngưỡng, logic tạm thời). Mọi kết quả cần gắn liền với mã nguồn, dữ liệu, mô hình, cấu hình và metadata tương ứng.
+
+\input{Table/Table_15.tex}
+
+Hệ thống đã tạo được nền tảng thực nghiệm từ quy trình thu, đặc trưng dùng chung, baseline đến mô hình đa bước và nhật ký dự báo. Giá trị của vòng phát triển tiếp theo nằm ở việc bổ sung bằng chứng về phép đo và hiệu quả cảnh báo trước khi tăng độ phức tạp của mô hình.

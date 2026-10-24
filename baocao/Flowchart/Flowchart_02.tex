@@ -1,0 +1,43 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance = 0.9cm and 1.2cm,
+    font = \footnotesize,
+    startstop/.style = {rectangle, rounded corners=10pt, minimum width=2.4cm, minimum height=0.7cm, text centered, draw=black!80, fill=gray!15},
+    process/.style   = {rectangle, minimum width=3.4cm, minimum height=0.8cm, text centered, draw=blue!70!black, fill=blue!5, rounded corners=2pt, align=center},
+    decision/.style  = {diamond, aspect=2, minimum width=2.8cm, text centered, draw=orange!80!black, fill=orange!10, align=center, inner sep=1pt},
+    io/.style        = {trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3.0cm, minimum height=0.7cm, text centered, draw=teal!70!black, fill=teal!5, align=center},
+    arrow/.style     = {-Stealth, thick, draw=gray!80}
+]
+
+    % Các khối chức năng
+    \node (start) [startstop] {Bắt đầu};
+    \node (fetch) [process, below=0.6cm of start] {Gửi HTTP Request đến API Camera\\{\scriptsize (\texttt{Get\_frame.py}, \texttt{cv2.imdecode})}};
+    \node (time)  [process, below=0.6cm of fetch] {Ghi nhận Timestamp máy nhận ảnh};
+    \node (check) [decision, below=0.6cm of time] {\texttt{frame.tobytes()} \\ trùng ảnh trước?};
+    \node (yolo)  [process, below=0.7cm of check] {Chạy YOLO nhận diện phương tiện\\\& Tính điểm WTI};
+    \node (buffer)[decision, below=0.6cm of yolo] {Đủ lô 5 mẫu\\hoặc ngoại lệ?};
+    \node (write) [io, below=0.6cm of buffer] {Ghi dữ liệu vào CSV\\{\scriptsize (Batch flush / \texttt{finally})}};
+    \node (loop)  [startstop, below=0.6cm of write] {Tiếp tục chu kỳ tiếp theo};
+
+    % Đường nối và rẽ nhánh
+    \draw [arrow] (start) -- (fetch);
+    \draw [arrow] (fetch) -- (time);
+    \draw [arrow] (time) -- (check);
+    
+    % Rẽ nhánh: Nếu trùng ảnh thì bỏ qua, quay lại lấy ảnh mới
+    \draw [arrow] (check) -- node[right] {Sai (ảnh mới)} (yolo);
+    \draw [arrow] (check.east) -- ++(1.4,0) node[above, pos=0.4] {Đúng (trùng)} |- (fetch.east);
+
+    % Ghi dữ liệu
+    \draw [arrow] (yolo) -- (buffer);
+    \draw [arrow] (buffer) -- node[right] {Đúng} (write);
+    \draw [arrow] (write) -- (loop);
+
+    % Rẽ nhánh: Chưa đủ 5 mẫu thì gom tiếp
+    \draw [arrow] (buffer.west) -- ++(-1.1,0) node[above, pos=0.4] {Chưa} |- (loop.west);
+
+\end{tikzpicture}
+\caption{Lưu đồ giải thuật quy trình thu thập ảnh, kiểm tra trùng lặp và ghi dữ liệu của mô-đun \texttt{get\_data.py}.}
+\label{fig:get_data_flowchart}
+\end{figure}

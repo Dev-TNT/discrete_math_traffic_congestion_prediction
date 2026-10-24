@@ -1,19 +1,30 @@
 \section{Bộ dữ liệu và phương pháp thu thập}
     
     \subsection{Nguồn và quy trình thu thập}
-    \texttt{core/Get\_frame.py} gửi yêu cầu đến đường dẫn \texttt{render/ImageHandler.ashx} của nguồn camera giao thông TP.HCM. Yêu cầu chứa định danh camera và tham số thời gian, kèm User-Agent, Referer, thời gian chờ 10 giây. Dữ liệu trả về được chuyển thành mảng NumPy và giải mã bằng \texttt{cv2.imdecode()}.
+    % \texttt{core/Get\_frame.py} gửi yêu cầu đến đường dẫn \texttt{render/ImageHandler.ashx} của nguồn camera giao thông TP.HCM. Yêu cầu chứa định danh camera và tham số thời gian, kèm User-Agent, Referer, thời gian chờ 10 giây. Dữ liệu trả về được chuyển thành mảng NumPy và giải mã bằng \texttt{cv2.imdecode()}.
 
-    \texttt{get\_data.py} thực hiện quy trình sau:
+    Quy trình thu thập dữ liệu được thực hiện như sau:
     \begin{enumerate}
-        \item Lấy ảnh từ camera được chọn, mặc định là Camera 1.
+        \item Lấy ảnh từ camera được chọn (mặc định là Camera 1).
         \item Ghi nhận thời gian máy nhận ảnh trước khi chạy nhận diện.
-        \item So sánh \texttt{frame.tobytes()} với ảnh ngay trước đó. Nếu giống hoàn toàn, không tạo thêm mẫu nhận diện.
+        \item So sánh với ảnh ngay trước đó. Nếu giống hoàn toàn, không tạo thêm mẫu nhận diện.
         \item Chạy YOLO trên ảnh mới, đếm phương tiện và tính WTI.
         \item Ghi kết quả thành CSV theo lô mỗi 5 mẫu; ghi phần còn lại trong khối \texttt{finally} khi thoát bình thường hoặc có ngoại lệ đi qua khối này.
     \end{enumerate}
     Collector mặc định chạy tối đa 86.400 giây, tương đương 24 giờ. Tên đầu ra đã tồn tại bị từ chối nhằm giữ nguyên đợt thu trước. Dữ liệu thực tế có khoảng cách mẫu trung vị 12 giây; đây là nhịp quan sát đo được, không phải bảo đảm rằng camera nguồn phát ảnh mới chính xác mỗi 12 giây.
 
-    Việc so sánh bytes chỉ phát hiện ảnh lặp hoàn toàn liên tiếp. Nó không xác minh độ mới của ảnh phía camera, không nhận biết mọi trường hợp ảnh gần giống và không thay thế được kiểm tra chất lượng nhận diện. Timestamp trong CSV không có thông tin múi giờ; hệ thống xử lý chúng theo quy ước giờ địa phương Việt Nam. Do CSV cũ không lưu phiên bản collector, không thể khẳng định mọi dòng lịch sử đều được tạo bằng chính phiên bản mã hiện tại.
+    Việc so sánh ảnh bằng \texttt{frame.tobytes()} chỉ phát hiện ảnh lặp hoàn toàn liên tiếp. 
+    Nó không thể xác minh được độ mới của ảnh phía camera, không nhận biết mọi trường hợp ảnh gần giống và không thay thế được 
+    kiểm tra chất lượng nhận diện. 
+    
+    Timestamp trong CSV không có thông tin về múi giờ. Do đó hệ thống xử lý theo quy ước giờ địa phương Việt Nam (GMT+7).
+
+    \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{eda_wti_comparison.png}
+    \caption{Diễn biến chỉ số WTI trung bình từng phút, đường trung bình trượt 15 phút và ngưỡng thử nghiệm 100 WTI của hai đợt thu thập dữ liệu (data1: 21--22/09/2026 và data2: 28--29/09/2026).}
+    \label{fig:eda_wti_comparison}
+    \end{figure}
 
     \subsection{Quy mô và cấu trúc}
     Hai CSV chứa tổng cộng 14.109 bản ghi và 9 cột, tương ứng hai đợt quan sát gần 24 giờ, cách nhau khoảng một tuần. Trong thiết kế huấn luyện, \texttt{data1} dùng cho fit/validation và refit; \texttt{data2} dùng để đánh giá sau khi chọn cách biểu diễn mục tiêu.
@@ -25,40 +36,40 @@
     \input{Table/Table_04.tex}
 
     \subsection{Phân bố quan sát}
-    Các thống kê dưới đây được tính lại trực tiếp từ từng dòng CSV, trước khi tổng hợp theo phút. Độ lệch chuẩn trong bảng là độ lệch chuẩn mẫu.
-
-    \input{Table/Table_05.tex}
-
-    Tỷ lệ vượt 100 ở đây là tỷ lệ ảnh, không phải tỷ lệ phút vượt ngưỡng hay tỷ lệ cửa sổ thỏa quy tắc cảnh báo 3/5. Tương tự, bản ghi không có xe có thể phản ánh cảnh vắng hoặc detector không tìm thấy phương tiện; dữ liệu hiện có chưa đủ để phân biệt hai nguyên nhân cho từng ảnh.
-
-    \input{Table/Table_06.tex}
-
-    Tỷ trọng được tính bằng tổng số phát hiện của từng loại chia tổng phát hiện phương tiện trên các ảnh. Một xe có thể xuất hiện nhiều lần, vì vậy bảng không thể dùng để suy ra số xe duy nhất đi qua giao lộ. Phân bố cũng chịu ảnh hưởng của góc camera, che khuất và khả năng nhận diện từng lớp.
-
-    \begin{figure}[htbp]
+    \begin{figure}[H]
     \centering
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{data/chart1.png}
-        \caption{Biểu đồ WTI quan sát của đợt 21--22/09 (\texttt{data/chart1.png}). Vùng đêm có mức thấp, sau đó WTI tăng rõ khi chuyển sang buổi sáng.}
+        \caption{Biểu đồ WTI quan sát của đợt 21--22/09/}
         \label{fig:chart1}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{0.48\textwidth}
         \centering
         \includegraphics[width=\linewidth]{data/chart2.png}
-        \caption{Biểu đồ WTI quan sát của đợt 28--29/09 (\texttt{data/chart2.png}). Hai hình là biểu đồ dữ liệu đã thu, không phải kết quả dự báo.}
+        \caption{Biểu đồ WTI quan sát của đợt 28--29/09.}
         \label{fig:chart2}
     \end{subfigure}
     \caption{Đối chiếu biểu đồ WTI quan sát thực tế giữa hai đợt thu thập dữ liệu.}
     \label{fig:comparison_charts}
     \end{figure}
 
+    Lưu ý rằng các thống kê dưới đây được tính lại trực tiếp từ từng dòng CSV, trước khi tổng hợp theo phút. Có nghĩa là chưa sử dụng Hàm tổng hợp phút.
+    \input{Table/Table_05.tex}
+
+    Tỷ lệ vượt 100 ở đây là tỷ lệ ảnh, không phải tỷ lệ phút vượt ngưỡng hay tỷ lệ cửa sổ thỏa quy tắc cảnh báo 3/5. Tương tự, bản ghi không có xe có thể phản ánh cảnh vắng hoặc detector không tìm thấy phương tiện; dữ liệu hiện có chưa đủ để phân biệt hai nguyên nhân cho từng ảnh.
+    \input{Table/Table_06.tex}
+
+    Tỷ trọng trong Bảng \ref{tab:ty_trong_phuong_tien} được tính bằng tổng số phát hiện của từng loại chia tổng phát hiện phương tiện trên các ảnh. Một xe có thể xuất hiện nhiều lần, vì vậy bảng không thể dùng để suy ra số xe duy nhất đi qua giao lộ. Phân bố cũng chịu ảnh hưởng của góc camera, che khuất và khả năng nhận diện từng lớp.
+
+    
+
     Hai đợt đều có WTI trung bình thấp vào khoảng 02 giờ. Tính trên chuỗi phút hoàn tất, giờ có WTI trung bình cao nhất là 11 giờ ở \texttt{data1} và 16 giờ ở \texttt{data2}. Điều này cho thấy vị trí đỉnh và hình dạng chuỗi có thay đổi giữa các đợt; không nên coi một ngày tham chiếu là quy luật cố định. Đỉnh WTI cũng không nhất thiết trùng đỉnh tổng số xe vì thành phần phương tiện có trọng số khác nhau.
 
     \input{Graph/Graph_01.tex}
-    \subsection{Chất lượng và tính đại diện}
+
     Kiểm tra trực tiếp cho thấy hai CSV không có ô trống hoặc timestamp trùng. Hàm kiểm tra của dự án chấp nhận toàn bộ bản ghi về số đếm nguyên không âm, giá trị hữu hạn và tính nhất quán của \texttt{total}, WTI. Mã băm SHA-256 của hai CSV hiện tại khớp thông tin dữ liệu trong báo cáo huấn luyện đã lưu.
 
     Tuy vậy, dữ liệu sạch ở cấp dòng vẫn có thể thiếu theo thời gian: 5 phút hoàn toàn vắng mẫu chỉ xuất hiện rõ sau khi đưa dữ liệu về lưới một phút. Ngoài ra, dữ liệu chưa có \texttt{camera\_id}, phiên bản detector, ROI, nhãn thời tiết, tốc độ hoặc nhãn ùn tắc. Hai đợt gần 24 giờ chưa đủ để đánh giá mùa vụ tuần, ngày lễ, sự cố hay khả năng chuyển sang giao lộ khác.
-
+    

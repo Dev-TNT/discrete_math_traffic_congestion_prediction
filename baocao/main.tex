@@ -9,9 +9,10 @@
 %Cấu hình khoảng cách dòng 1 line spacing
 \usepackage{setspace}
 \singlespacing
-
+\usepackage{float}
 %Toán số học, ký hiệu toán học
 \usepackage{amsmath}
+\usepackage{amssymb}
 
 %Graph, biểu đồ
 \usepackage{pgfplots}
@@ -32,6 +33,7 @@
 
 % --- URL ---
 \usepackage[colorlinks=true, urlcolor=black, linkcolor=black, citecolor=blue]{hyperref}
+\usepackage{hyperref}
 \graphicspath{{../}}
 
 % --- CẤU HÌNH TIÊU ĐỀ BÀI BÁO (Dành cho trang 2) ---
@@ -113,111 +115,24 @@
 
 \input{sections/01_phat_bieu_bai_toan.tex}
 
-\input{sections/02_bo_du_lieu_va_phuong_phap_thu_thap.tex}
+\input{sections/02_co_so_ly_thuyet.tex}
 
-\input{sections/03_quy_trinh_xu_ly_he_thong.tex}
+\input{sections/03_bo_du_lieu_va_phuong_phap_thu_thap.tex}
 
-\input{sections/04_lua_chon_mo_hinh.tex}
+\input{sections/04_quy_trinh_xu_ly_he_thong.tex}
 
-\input{sections/05_noi_bat_va_dong_gop.tex}
+\input{sections/05_lua_chon_mo_hinh.tex}
 
-\input{sections/06_bai_hoc_kinh_nghiem.tex}
-%  Chuyển phần mã nguồn xuống dưới cùng thành Phụ lục (Appendix) 
-\newpage
+\input{sections/06_noi_bat_va_dong_gop.tex}
+
+\input{sections/07_bai_hoc_kinh_nghiem.tex}
+
 \appendix
-\section{Mã nguồn (Source Codes)}
-\subsection{Các thư viện được sử dụng}
-\begin{minted}[linenos, breaklines, frame=lines, fontsize=\small]{python}
-import requests
-import cv2
-import numpy as np
-import time
-    
-\end{minted}
-\subsection{Get\_frame.py}
-\begin{minted}[linenos, breaklines, frame=lines, fontsize=\small]{python}
-def get_traffic_image(name="Camera 1"):
-    global cam_id
-    timestamp = int(time.time() * 1000)
-    url = f"https://giaothong.hochiminhcity.gov.vn/render/ImageHandler.ashx?id={cam_id[name]}&t={timestamp}"
-
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Referer": "https://giaothong.hochiminhcity.gov.vn/Map.aspx"
-    }
-
-    try:
-        response = requests.get(url, headers=headers, timeout=5)
-        if response.status_code == 200:
-            img_array = np.asarray(bytearray(response.content), dtype=np.uint8)
-            frame = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
-            return frame
-        else:
-            print(f"Server response error: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"Network error: {e}")
-
-    return None
-\end{minted}
-
-\subsection{Yolo\_detect.py}
-\begin{minted}[linenos, breaklines, frame=lines, fontsize=\small]{python}
-def callback(image_slice: np.ndarray) -> sv.Detections:
-    result = model(image_slice)[0]
-    return sv.Detections.from_ultralytics(result)
-
-def image_processing(frame):
-    slicer = sv.InferenceSlicer(callback=callback, slice_wh=(256, 256))
-    detections = slicer(frame)
-
-    # Đếm theo class ID của YOLO
-    class_ids = detections.class_id
-
-    person_count = np.sum(class_ids == 0)
-    car_count = np.sum(class_ids == 2)
-    motorbike_count = np.sum(class_ids == 3)
-    bus_count = np.sum(class_ids == 5)
-    truck_count = np.sum(class_ids == 7)
-    total_vehicles = car_count + motorbike_count + bus_count + truck_count
-    total_objects = len(class_ids)
-
-    print(f"Person: {person_count}")
-    print(f"Car: {car_count}")
-    print(f"Motorbike: {motorbike_count}")
-    print(f"Bus: {bus_count}")
-    print(f"Truck: {truck_count}")
-    print(f"Total vehicles: {total_vehicles}")
-    print(f"Total objects detected: {total_objects}")
-
-    # Weighted Traffic Impact (WTI)
-    car_w = 4
-    motorbike_w = 1
-    bus_w = 7
-    truck_w = 6
-
-    weighted_traffic_impact = (
-            int(car_count) * car_w
-            + int(motorbike_count) * motorbike_w
-            + int(bus_count) * bus_w
-            + int(truck_count) * truck_w
-    )
-
-    weighted_traffic_impact_norm = (
-        weighted_traffic_impact / total_vehicles if total_vehicles > 0 else 0.0
-    )
-
-    box_annotator = sv.BoxAnnotator(thickness=1)
-
-    annotated_frame = box_annotator.annotate(
-        scene=frame.copy(),
-        detections=detections
-    )
-
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    cv2.putText(annotated_frame, f"{current_time}", (15, 35),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
-
-    return annotated_frame, person_count, car_count, motorbike_count, bus_count, truck_count, total_vehicles, weighted_traffic_impact, weighted_traffic_impact_norm
-\end{minted}
+\section*{Phụ lục: Mã nguồn dự án}
+\addcontentsline{toc}{section}{Phụ lục}
+\begin{itemize}
+\item \textbf{Đường dẫn kho lưu trữ (GitHub):} \href{https://github.com/Dev-TNT/discrete_math_traffic_congestion_prediction.git}{Dev-TNT/discrete\_math\_traffic\_congestion\_prediction}    
+\item \textbf{Hướng dẫn khởi chạy:} Các yêu cầu về môi trường (dependencies) và quy trình cài đặt chi tiết được hướng dẫn chi tiết tại tệp \texttt{README.md} đính kèm trong git.
+\end{itemize}
 
 \end{document}

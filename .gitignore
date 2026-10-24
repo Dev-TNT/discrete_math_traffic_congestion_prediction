@@ -13,3 +13,4 @@ _minted-*/
 *.out
 *.toc
 *.gz
+runs/traffic_history.sqlite3

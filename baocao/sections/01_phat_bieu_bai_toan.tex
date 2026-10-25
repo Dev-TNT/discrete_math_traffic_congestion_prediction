@@ -3,7 +3,7 @@
     \subsection{Mục tiêu và phạm vi}
     Dự án nghiên cứu khả năng sử dụng ảnh camera tại khu vực Ngã Tư Hàng Xanh để theo dõi mức hiện diện của phương tiện và ước lượng thời gian đến một trạng thái đông xe. Hệ thống chuyển ảnh thành số đếm theo loại phương tiện, xây dựng chuỗi thời gian, dự báo diễn biến trong một giờ tiếp theo và trình bày kết quả trên ứng dụng desktop.
 
-    Phiên bản đã triển khai giải quyết một bài toán cụ thể: dự báo chỉ số WTI trung bình từng phút trong 60 phút tiếp theo, sau đó xác định thời điểm bắt đầu cửa sổ vượt ngưỡng WTI thử nghiệm. Đây là hệ thống nguyên mẫu phục vụ nghiên cứu. Tập dữ liệu chưa có nhãn ùn tắc độc lập, tốc độ dòng xe hoặc thời gian hành trình để xác nhận trạng thái ùn tắc ngoài thực tế.
+    Phiên bản đã triển khai giải quyết một bài toán cụ thể: dự báo chỉ số WTI(Weighted Traffic Index - Chỉ số tải trọng giao thông) trung bình từng phút trong 60 phút tiếp theo, sau đó xác định thời điểm bắt đầu cửa sổ vượt ngưỡng WTI thử nghiệm. Đây là hệ thống nguyên mẫu phục vụ nghiên cứu. Tập dữ liệu chưa có nhãn ùn tắc độc lập, tốc độ dòng xe hoặc thời gian hành trình để xác nhận trạng thái ùn tắc ngoài thực tế.
 
     \begin{figure}[htbp]
         \centering
@@ -11,7 +11,7 @@
         \caption{Ảnh hiển thị chế độ MODEL WTI với 61 phút quan sát thật, WTI trung bình trượt 122,5 và trạng thái đang vượt ngưỡng. Trục hiển thị hai giờ trước và hai giờ sau hiện tại; phần dự báo chỉ dài 60 phút.}
     \end{figure}
 
-    Kết quả đánh giá lưu trong dự án cho thấy mô hình đạt MAE trung bình 14,12 WTI, thấp hơn khoảng 23,9\% so với cách giữ nguyên giá trị hiện tại. Tuy nhiên, lợi thế so với tham chiếu cùng giờ chỉ khoảng 4,0\%; tham chiếu này còn tốt hơn về một số chỉ số cảnh báo. Đóng góp rõ nhất của dự án là xây dựng được chuỗi xử lý từ ảnh đến dự báo có thể theo dõi và đánh giá, đồng thời làm rõ những giới hạn của phép đo dựa trên số xe trong ảnh.
+    Kết quả đánh giá lưu trong dự án cho thấy mô hình đạt MAE (Maximum Average Error - Sai số tuyệt đối trung bình) là 14,12 WTI, thấp hơn khoảng 23,9\% so với cách giữ nguyên giá trị hiện tại. Tuy nhiên, lợi thế so với tham chiếu cùng giờ chỉ khoảng 4,0\%; tham chiếu này còn tốt hơn về một số chỉ số cảnh báo. Đóng góp rõ nhất của dự án là xây dựng được chuỗi xử lý từ ảnh đến dự báo có thể theo dõi và đánh giá, đồng thời làm rõ những giới hạn của phép đo dựa trên số xe trong ảnh.
 
     
 
@@ -24,7 +24,7 @@
 
     Trong đó, \textit{total} là tổng bốn loại xe; \textit{person} không tham gia \textit{total} hoặc \textit{WTI}. WTI là điểm số có trọng số trên một ảnh. Đơn vị này không tương đương xe/phút, xe/km hay xác suất ùn tắc. Các trọng số là quy ước của dự án; thư mục chưa cung cấp một thực nghiệm hiệu chuẩn chúng với mức chiếm dụng đường hoặc mức chậm trễ giao thông.
 
-    Gọi $y(t)$ là WTI\_mean tại phút hoàn tất $t$, mô hình học ánh xạ từ $X(t)$ sang vector $[y(t+1), \dots, y(t+60)]$. ETA được suy ra từ vector dự báo; mã hiện tại không huấn luyện một bộ hồi quy ETA riêng.
+    Gọi $y(t)$ là WTI\_mean tại phút hoàn tất $t$, mô hình học ánh xạ từ $X(t)$ sang vector $[y(t+1), \dots, y(t+60)]$. ETA được suy ra từ vector dự báo.
 
     \subsection{Từ đề xuất ban đầu đến hệ thống hiện tại}
     Tài liệu Word là báo cáo đề xuất, trong đó có các phương án và công việc dự kiến. Đối chiếu với mã nguồn cho thấy những thay đổi sau:

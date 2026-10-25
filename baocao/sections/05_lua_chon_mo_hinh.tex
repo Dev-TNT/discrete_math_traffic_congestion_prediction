@@ -34,9 +34,9 @@
 
     \input{Table/Table_11.tex}
 
-    Các giá trị trên là cấu hình cố định được lưu trong mã, chưa phải ``bộ siêu tham số tối ưu'' có chứng cứ tìm kiếm. Phân tích tác dụng của chúng giải thích lựa chọn kỹ thuật, không thay thế thực nghiệm so sánh các cấu hình.
+    Các giá trị như trong Bảng \ref{tab:hyperparameter_config} là cấu hình cố định được lưu trong mã mà nhóm chọn, chưa phải ``bộ siêu tham số tối ưu'' có chứng cứ tìm kiếm. Phân tích tác dụng của chúng giải thích lựa chọn kỹ thuật, không thay thế thực nghiệm so sánh các cấu hình.
 
-    Horizon 60 phút, lịch sử 61 điểm, làm mượt 3 phút, ngưỡng 100 WTI và quy tắc 3/5 là các tham số của toàn hệ thống. Chúng tác động đến lượng dữ liệu cần có, độ nhạy cảnh báo và độ trễ, nhưng không nên trộn lẫn với siêu tham số cấu trúc cây. Chưa có bằng chứng ngưỡng 100 đã được chọn theo phân vị 85--90 như trong đề xuất ban đầu.
+    Horizon 60 phút, lịch sử 61 điểm, làm mượt 3 phút, ngưỡng 100 WTI và quy tắc 3/5 là các tham số của toàn hệ thống. Chúng tác động đến lượng dữ liệu cần có, độ nhạy cảnh báo và độ trễ, nhưng không nên trộn lẫn với siêu tham số cấu trúc cây.
 
     \subsection{Chia dữ liệu và ngăn rò rỉ thời gian}
     Quy trình trong \texttt{training\_model.Py} gồm:
